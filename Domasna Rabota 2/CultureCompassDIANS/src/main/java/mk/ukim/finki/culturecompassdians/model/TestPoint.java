@@ -10,12 +10,11 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "Testing")
+@Table(name = "NODES")
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestPoint implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
