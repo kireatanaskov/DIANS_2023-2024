@@ -1,0 +1,87 @@
+<osm-script output="xml" timeout="25">
+    <union>
+        <!-- Query for churches -->
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="church" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="church" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="church" />
+        </query>
+        <!-- Query for monasteries -->
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="monastery" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="monastery" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="building" v="monastery" />
+        </query>
+        <!-- Query for places of worship -->
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="amenity" v="place_of_worship" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="amenity" v="place_of_worship" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="amenity" v="place_of_worship" />
+        </query>
+
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="archaeological_site" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="archaeological_site" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="archaeological_site" />
+        </query>
+
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="memorial" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="memorial" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="historic" v="memorial" />
+        </query>
+
+        <query type="node">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="artwork_type" v="statue" />
+        </query>
+        <query type="way">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="artwork_type" v="statue" />
+        </query>
+        <query type="relation">
+            <bbox-query s="40.9" w="20.6" n="42.2" e="22.9" />
+            <has-kv k="artwork_type" v="statue" />
+        </query>
+    </union>
+    <union>
+        <item />
+        <recurse type="down" />
+    </union>
+    <print />
+</osm-script>
