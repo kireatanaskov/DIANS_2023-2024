@@ -1,47 +1,72 @@
 package mk.ukim.finki.culturecompassdians.service.impl;
 
-import mk.ukim.finki.culturecompassdians.model.TestPoint;
-import mk.ukim.finki.culturecompassdians.service.TestPointService;
+import mk.ukim.finki.culturecompassdians.model.Node;
+import mk.ukim.finki.culturecompassdians.model.Way;
+import mk.ukim.finki.culturecompassdians.service.NodeService;
+import mk.ukim.finki.culturecompassdians.service.WayService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 @Component
 public class CsvImporter implements CommandLineRunner {
 
-    private final TestPointService pointService;
+    private final NodeService nodeService;
+    private final WayService wayService;
+    private static final String NODES_PATH = "static/csv/nodes.csv";
+    private static final String WAYS_PATH = "static/csv/ways.csv";
 
-    public CsvImporter(TestPointService pointService) {
-        this.pointService = pointService;
+    public CsvImporter(NodeService nodeService, WayService wayService) {
+        this.nodeService = nodeService;
+        this.wayService = wayService;
     }
 
     // Read Nodes from csv file on startup
-    // TODO: Refactor into 2 functions for nodes and ways each
     @Override
-    public void run(String... args) throws Exception {
-        ClassPathResource resource = new ClassPathResource("static/csv/nodes.csv");
+    public void run(String... args) throws IOException {
+        saveNodes();
+        saveWays();
+    }
+
+    // Skip first line (id, name, category)
+    private void saveWays() throws IOException {
+        ClassPathResource resource = new ClassPathResource(WAYS_PATH);
         InputStream is = resource.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
         reader.lines()
                 .skip(1)
-                .forEach(line -> {
-                    String[] parts = line.split(",");
+                .map(line -> line.split(","))
+                .forEach(parts -> {
+                    Long id = Long.valueOf(parts[0]);
+                    String name = parts[1];
+                    String category = parts[2];
+                    Way way = new Way(id, name, category);
+                    wayService.saveWay(way);
+                });
+        reader.close();
+    }
+
+    private void saveNodes() throws IOException {
+        ClassPathResource resource = new ClassPathResource(NODES_PATH);
+        InputStream is = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        reader.lines()
+                .skip(1)
+                .map(line -> line.split(","))
+                .forEach(parts -> {
                     Long id = Long.valueOf(parts[0]);
                     double latitude = Double.parseDouble(parts[1]);
                     double longitude = Double.parseDouble(parts[2]);
                     String name = parts[3];
                     String category = parts[4];
-                    TestPoint node = new TestPoint(id, name, latitude, longitude, category);
-                    pointService.savePoint(node);
+                    Node node = new Node(id, name, latitude, longitude, category);
+                    nodeService.saveNode(node);
                 });
-
         reader.close();
     }
 }

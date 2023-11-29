@@ -1,15 +1,14 @@
 package mk.ukim.finki.culturecompassdians.repository;
 
-import mk.ukim.finki.culturecompassdians.model.TestPoint;
+import mk.ukim.finki.culturecompassdians.model.Way;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
-public interface TestPointRepository extends JpaRepository<TestPoint, Long> {
+public interface WayRepository extends JpaRepository<Way, Long> {
 
-    List<TestPoint> findTestPointByCategory(String text);
+    List<Way> findAllByCategory(String category);
 
 }
