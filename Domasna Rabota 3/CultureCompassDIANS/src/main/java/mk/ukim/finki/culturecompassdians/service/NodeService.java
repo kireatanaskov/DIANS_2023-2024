@@ -15,6 +15,8 @@ public interface NodeService {
 
     Node saveNode(Node point);
 
+    void saveAll(List<Node> nodes);
+
     void deleteNodeById(Long id);
 
 }

@@ -38,7 +38,13 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
+    public void saveAll(List<Node> nodes) {
+        nodeRepository.saveAll(nodes);
+    }
+
+    @Override
     public void deleteNodeById(Long id) {
         nodeRepository.deleteById(id);
     }
+
 }
