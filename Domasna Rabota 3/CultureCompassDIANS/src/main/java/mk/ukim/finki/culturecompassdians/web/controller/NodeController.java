@@ -25,8 +25,12 @@ public class NodeController {
     }
 
     @GetMapping("/all")
-    public String getAllPoints(Model model) throws JsonProcessingException {
+    public String getAllPoints(@RequestParam (required = false) String search,
+                               Model model) throws JsonProcessingException {
         List<Node> allNodes = nodeService.findAllNodes();
+        if (search != null) {
+            allNodes = nodeService.findByCategoryOrName(search);
+        }
         String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
