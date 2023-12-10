@@ -16,5 +16,4 @@ public interface NodeService {
     Node saveNode(Node point);
 
     void deleteNodeById(Long id);
-
 }
