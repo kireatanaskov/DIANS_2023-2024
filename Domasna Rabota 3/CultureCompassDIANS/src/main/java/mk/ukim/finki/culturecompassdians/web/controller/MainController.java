@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
 
     @GetMapping()
-    public String homePage(Model model) {
-        model.addAttribute("bodyContent", "home-page");
-        return "master-template";
+    public String homePage() {
+        return "home-page" ;
     }
 
 }
