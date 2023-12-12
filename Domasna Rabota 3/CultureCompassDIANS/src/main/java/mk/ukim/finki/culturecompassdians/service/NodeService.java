@@ -18,5 +18,4 @@ public interface NodeService {
     void saveAll(List<Node> nodes);
 
     void deleteNodeById(Long id);
-
 }

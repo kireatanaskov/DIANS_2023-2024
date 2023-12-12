@@ -1,7 +1,6 @@
 <div xmlns:th="http://www.thymeleaf.org">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
   <section class="jumbotron text-center">
     <div class="container">
       <h1 class="jumbotron-heading">CULTURE COMPASS</h1>
@@ -21,15 +20,51 @@
         }).addTo(map);
 
         let markers = [];
+        let coordinates = [];
 
         nodes.forEach(function (node) {
             let marker = L.marker([node.latitude, node.longitude])
                 .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData);
             markers.push(marker);
+
+            coordinates.push([node.latitude, node.longitude]);
         });
 
         let markerGroup = L.featureGroup(markers).addTo(map);
+
         map.fitBounds(markerGroup.getBounds());
+
+        // Getting location
+        const getLocation = () => {
+            // Get the location from the user
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    console.log(latitude, longitude);
+
+                    // Send location to the server using AJAX
+                    sendLocationToServer(latitude, longitude);
+                }, function () {
+                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.")
+            }
+        };
+
+        function sendLocationToServer(latitude, longitude) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/map/findRoute", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Location sent successfully!");
+                }
+            };
+            xhr.send("latitude=" + latitude + "&longitude=" + longitude);
+        }
     </script>
 
 
