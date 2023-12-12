@@ -1,17 +1,22 @@
-<div xmlns:th="http://www.thymeleaf.org">
-    <div class="container mt-5">
-        <div class="text-center">
-            <img src="" alt="Placeholder logo" class="img-fluid mb-4" style="max-width: 200px;">
-            <h1 class="display-4">Welcome to Culture Compass</h1>
-            <p class="lead">Explore the cultural heritage of Macedonia with ease.</p>
-        </div>
-
-        <div class="text-center">
-            <iframe width="425" height="350"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=20.440063476562504%2C40.876057187864994%2C23.010864257812504%2C42.24470289761681&amp;layer=mapnik"
-                    style="border: 1px solid black">
-            </iframe>
-        </div>
-    </div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Home Page</title>
+</head>
+<body th:style="'background-image:url(' + @{/images/homePage.jpg} + '); background-repeat: no-repeat; background-size: cover; height: 97.5vh; width: 90vw'">
+<div th:style="'text-align: center; color: white; font-size: 4em; text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);'">
+    Истражете го <br>културното наследство <br>на Македонија
 </div>
+<div class="text-center" th:style="'position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);'">
+    <a th:href="@{/node/all}" th:style="'text-decoration: none;'">
+        <button class="btn btn-dark rounded-circle text-white" th:style="'padding: 10px 30px; font-size: 17px; border-radius: 20px; background-color: black; color: white; border: none'">ЗАПОЧНИ АВАНТУРА</button>
+    </a>
+</div>
+<div class="text-left" th:style="'position: absolute; font-size:35px; bottom: 100px; left: 70px; color: white; font-weight: bold;'">
+    Културен Компас
+
+</div>
+</body>
+</html>
 

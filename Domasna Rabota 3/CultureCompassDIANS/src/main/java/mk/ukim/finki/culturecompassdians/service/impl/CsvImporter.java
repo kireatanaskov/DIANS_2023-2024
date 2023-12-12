@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 @Component
 public class CsvImporter implements CommandLineRunner {
@@ -31,6 +32,7 @@ public class CsvImporter implements CommandLineRunner {
     public void run(String... args) throws IOException {
         saveNodes();
         saveWays();
+        updateNodes();
     }
 
     // Skip first line (id, name, category)
@@ -68,5 +70,17 @@ public class CsvImporter implements CommandLineRunner {
                     nodeService.saveNode(node);
                 });
         reader.close();
+    }
+
+    private void updateNodes() {
+        List<Node> nodes = nodeService.findAllNodes();
+        nodes.forEach(node -> {
+            String OSM_URL = "https://www.openstreetmap.org/node/" + node.getId();
+            String wikipediaLink = OpenStreetMapScraper.getWikipediaLink(OSM_URL);
+            String firstParagraph = OpenStreetMapScraper.getFirstParagraph(wikipediaLink);
+            node.setWikipediaData(!firstParagraph.isEmpty() ? firstParagraph : "");
+        });
+
+        nodeService.saveAll(nodes);
     }
 }

@@ -28,8 +28,8 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public List<Node> findByCategory(String text) {
-        return nodeRepository.findTestPointByCategory(text);
+    public List<Node> findByCategoryOrName(String text) {
+        return nodeRepository.findByCategoryOrNameContaining(text.toLowerCase());
     }
 
     @Override
@@ -38,7 +38,13 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
+    public void saveAll(List<Node> nodes) {
+        nodeRepository.saveAll(nodes);
+    }
+
+    @Override
     public void deleteNodeById(Long id) {
         nodeRepository.deleteById(id);
     }
+
 }
