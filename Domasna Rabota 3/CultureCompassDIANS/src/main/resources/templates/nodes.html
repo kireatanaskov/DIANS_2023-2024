@@ -44,7 +44,7 @@
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;
 
-                    console.log(longitude, latitude);
+                    console.log(latitude, longitude);
 
                     // Send location to the server using AJAX
                     sendLocationToServer(latitude, longitude);
@@ -58,7 +58,7 @@
 
         function sendLocationToServer(latitude, longitude) {
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "/node/location", true);
+            xhr.open("POST", "/map/findRoute", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {

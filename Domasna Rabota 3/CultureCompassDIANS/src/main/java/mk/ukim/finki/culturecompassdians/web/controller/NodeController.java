@@ -57,17 +57,4 @@ public class NodeController {
 
         return "Location received successfully!";
     }
-
-    @GetMapping("/findWay")
-    public String findWay(Model model) {
-        List<Node> waypoints = nodeService.findAllNodes();
-
-        List<Point> waypointPoints = waypoints.stream()
-                .map(node -> new Point(node.getLatitude(), node.getLongitude()))
-                .collect(Collectors.toList());
-
-        model.addAttribute("wayBetweenPoints", waypointPoints);
-        model.addAttribute("bodyContent", "map-result");
-        return "master-template";
-    }
 }
