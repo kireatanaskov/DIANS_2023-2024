@@ -14,5 +14,6 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
 
     @Query("SELECT n FROM Node n WHERE LOWER(n.category) LIKE %:text% OR LOWER(n.name) LIKE %:text%")
     List<Node> findByCategoryOrNameContaining(@Param("text") String text);
+    void deleteByName(String name);
 
 }
