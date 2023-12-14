@@ -3,16 +3,18 @@ package mk.ukim.finki.culturecompassdians.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mk.ukim.finki.culturecompassdians.model.Node;
-import mk.ukim.finki.culturecompassdians.model.Point;
+import mk.ukim.finki.culturecompassdians.model.exception.NotFoundException;
 import mk.ukim.finki.culturecompassdians.service.NodeService;
-import org.springframework.http.ResponseEntity;
+import mk.ukim.finki.culturecompassdians.service.impl.OpenStreetMapService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/node")
@@ -21,13 +23,21 @@ import java.util.stream.Collectors;
 public class NodeController {
 
     private final NodeService nodeService;
-    public NodeController(NodeService nodeService) {
+    private final OpenStreetMapService openStreetMapService;
+
+    public NodeController(NodeService nodeService, OpenStreetMapService openStreetMapService) {
         this.nodeService = nodeService;
+        this.openStreetMapService = openStreetMapService;
     }
 
     @GetMapping("/all")
-    public String getAllPoints(@RequestParam (required = false) String search,
+    public String getAllPoints(@RequestParam(required = false) String error,
+                               @RequestParam(required = false) String search,
                                Model model) throws JsonProcessingException {
+        if(error != null && !error.isEmpty()) {
+            model.addAttribute("hasError",true);
+            model.addAttribute("error",error);
+        }
         List<Node> allNodes = nodeService.findAllNodes();
         if (search != null) {
             allNodes = nodeService.findByCategoryOrName(search);
@@ -50,6 +60,46 @@ public class NodeController {
 //        return nodeService.findByCategory(text);
 //    }
 
+    @PostMapping("/add")
+    public String saveNode(@ModelAttribute Node newNode, Model model) {
+        try {
+            Node node = openStreetMapService.getNodeInfo(newNode.getName(), newNode.getCategory());
+
+            newNode.setId(node.getId());
+            newNode.setLongitude(node.getLongitude());
+            newNode.setLatitude(node.getLatitude());
+            newNode.setCategory(node.getCategory());
+
+            Node savedNode = this.nodeService.saveNode(newNode);
+            model.addAttribute("newNode", savedNode);
+
+            return "redirect:/node/all";
+        } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", "Node not found on OpenStreetMap for name: " + newNode.getName());
+            return "add-page";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error while saving the node");
+            return "add-page";
+        }
+    }
+
+    @GetMapping("/add-form")
+    public String addNodePage(Model model) {
+        model.addAttribute("newNode", new Node());
+        return "add-page";
+    }
+
+    @GetMapping("/edit-form/{id}")
+    public String editNodePage(@PathVariable Long id, Model model) {
+        if (this.nodeService.findNodeById(id).isPresent()) {
+            Node node = this.nodeService.findNodeById(id).get();
+            model.addAttribute("newNode", node);
+            return "edit-page";
+        }
+        return "redirect:/node/all?error=NodeNotFound";
+    }
+
     @PostMapping("/location")
     @ResponseBody
     public String receiveLocation(@RequestParam("latitude") double latitude,
@@ -61,4 +111,5 @@ public class NodeController {
 
         return "Location received successfully!";
     }
+
 }

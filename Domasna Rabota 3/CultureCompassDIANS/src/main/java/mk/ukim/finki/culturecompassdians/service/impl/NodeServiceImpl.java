@@ -47,4 +47,11 @@ public class NodeServiceImpl implements NodeService {
         nodeRepository.deleteById(id);
     }
 
+    @Override
+    public Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category) {
+        this.nodeRepository.deleteByName(name);
+        Node newNode = new Node(id, name, latitude, longitude, category);
+        return Optional.of(this.nodeRepository.save(newNode));
+    }
+
 }
