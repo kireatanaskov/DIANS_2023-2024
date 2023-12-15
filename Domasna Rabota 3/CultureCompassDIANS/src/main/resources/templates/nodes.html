@@ -7,6 +7,12 @@
             width: 200px;
         }
     </style>
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">CULTURE COMPASS</h1>
+            <h3 class="jumbotron-heading">All nodes</h3>
+        </div>
+    </section>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <div class="row" style="margin: 0;"> 
@@ -40,7 +46,7 @@
     }).addTo(map);
 
     let markers = [];
-    let coordinates = [];
+
 
     nodes.forEach(function (node) {
         let marker = L.marker([node.latitude, node.longitude])  
@@ -52,10 +58,20 @@
 
         markers.push(marker);
 
-        coordinates.push([node.latitude, node.longitude]);
     });
 
     let markerGroup = L.featureGroup(markers).addTo(map);
+
+//         let markers = [];
+
+//         nodes.forEach(function (node) {
+//             let marker = L.marker([node.latitude, node.longitude])
+//                 .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br>'
+//                     + '<button onclick="editNode(' + node.id + ')">Edit</button>'
+//                     + '<button onclick="getLocation(' + node.latitude + ',' + node.longitude + ')">Navigate</button>'
+//                 );
+//             markers.push(marker);
+//         });
 
     map.fitBounds(markerGroup.getBounds());
 
@@ -92,6 +108,48 @@
           node_explanation.push("Additional wiki data: ", node.wikipediaData);
         }
 
+        let userLatitude;
+        let userLongitude;
+
+        // Getting location
+        const getLocation = (nodeLatitude, nodeLongitude) => {
+            // Get the location from the user
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+
+                    console.log(userLatitude, userLongitude); // For kind of debugging purposes
+
+                    sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude);
+                }, function () {
+                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.")
+            }
+        };
+
+        function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
+            console.log("Before fetch");
+            fetch('/map/findRoute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
+                body: `startLat=${userLatitude}&startLon=${userLongitude}&endLat=${nodeLatitude}&endLon=${nodeLongitude}`,
+            }).then(response => {
+                console.log("Received response with status: " + response.status); // For kind of debugging purposes
+
+                if (response.status === 200) {
+                    console.log("Location sent successfully!");
+                    window.location.href = '/map';
+                } else {
+                    alert("Error getting location");
+                }
+            }).catch(error => {
+                console.error("Error sending location:", error);
+            });
+        }
+      
         paragraph.textContent = node_explanation.join("");
         locations.textContent = `${node.latitude}, ${node.longitude}`;
 
@@ -122,57 +180,9 @@
       map.setView(marker.getLatLng(), 16);
     }
 
-    const getLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                console.log(latitude, longitude);
-
-                sendLocationToServer(latitude, longitude);
-            }, function () {
-                alert("Geolocation access is blocked. Please update your browser settings to allow access.")
-            });
-        } else {
-            alert("Geolocation is not supported by this browser.")
-        }
-    };
-
     const resetMap = () => {
       map.setView([41.6086, 21.7453], 9);
     }
-    function sendLocationToServer(latitude, longitude) {
-          let endLat = 41.9983057;
-          let endLon = 21.4254968;
-
-          console.log("Before fetch")
-          fetch('/map/findRoute', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `startLat=${latitude}&startLon=${longitude}&endLat=${endLat}&endLon=${endLon}`,
-          }).then(response => {
-
-            console.log("Received response with status: " + response.status);
-            console.log(response.status);
-            console.log(response.headers.get("Location"));
-
-            if (response.status === 302) {
-              // Handle redirect manually
-              console.log("Redirecting to: " + response.headers.get("Location"));
-
-            console.log("Before redirection");
-            window.location.replace = response.headers.get("Location");
-            console.log("After redirection");
-            } else if (response.status === 200) {
-                console.log("Location sent successfully!");
-            }
-          }).catch(error => {
-            console.error("Error sending location:", error);
-          });
-        }
     </script>
 
 <div class="col mb-3">

@@ -1,15 +1,9 @@
 package mk.ukim.finki.culturecompassdians.web.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/map")
@@ -18,7 +12,7 @@ public class MapController {
 
     @GetMapping()
     public String showPathView(Model model) {
-        model.addAttribute("bodyContent", "map");
+        model.addAttribute("bodyContent", "navigate");
 
         return "master-template";
     }
@@ -28,15 +22,13 @@ public class MapController {
                             @RequestParam("startLon") double startLon,
                             @RequestParam("endLat") double endLat,
                             @RequestParam("endLon") double endLon,
-                            HttpServletResponse response,
-                            Model model) {
+                            HttpSession session, Model model) {
 
-        model.addAttribute("startLat", startLat);
-        model.addAttribute("startLon", startLon);
-        model.addAttribute("endLat", endLat);
-        model.addAttribute("endLon", endLon);
-//        model.addAttribute("bodyContent", "map");
-        return "redirect:/";
+        session.setAttribute("startLat", startLat);
+        session.setAttribute("startLon", startLon);
+        session.setAttribute("endLat", endLat);
+        session.setAttribute("endLon", endLon);
+        model.addAttribute("bodyContent", "navigate");
+        return "master-template";
     }
-
 }
