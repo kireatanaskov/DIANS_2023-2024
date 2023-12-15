@@ -90,13 +90,18 @@
           }).then(response => {
 
             console.log("Received response with status: " + response.status);
+            console.log(response.status);
+            console.log(response.headers.get("Location"));
 
-            if (response.status === 200) {
-              console.log("Location sent successfully!");
-            } else if (response.status === 302) {
+            if (response.status === 302) {
               // Handle redirect manually
               console.log("Redirecting to: " + response.headers.get("Location"));
-              window.location.href = response.headers.get("Location");
+
+            console.log("Before redirection");
+            window.location.replace = response.headers.get("Location");
+            console.log("After redirection");
+            } else if (response.status === 200) {
+                console.log("Location sent successfully!");
             }
           }).catch(error => {
             console.error("Error sending location:", error);

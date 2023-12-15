@@ -35,8 +35,8 @@ public class MapController {
         model.addAttribute("startLon", startLon);
         model.addAttribute("endLat", endLat);
         model.addAttribute("endLon", endLon);
-        model.addAttribute("contentBody", "map");
-        return "master-template";
+//        model.addAttribute("bodyContent", "map");
+        return "redirect:/";
     }
 
 }

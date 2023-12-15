@@ -82,7 +82,7 @@ public class NodeController {
     @PostMapping("/add")
     public String saveNode(@ModelAttribute Node newNode, Model model) {
         try {
-            Node node = openStreetMapService.getNodeInfo(newNode.getName(), newNode.getCategory());
+            Node node = openStreetMapService.getNodeInfo(newNode.getName());
 
             newNode.setId(node.getId());
             newNode.setLongitude(node.getLongitude());

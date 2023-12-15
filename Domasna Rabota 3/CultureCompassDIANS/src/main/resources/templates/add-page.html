@@ -42,15 +42,6 @@
                                required
                                placeholder="Enter node name">
                     </div>
-                    <div class="form-group">
-                        <label for="category">Category</label>
-                        <input type="text"
-                               class="form-control"
-                               id="category"
-                               name="category"
-                               th:value="(${newNode} != null ? ${newNode.getCategory()} : '')"
-                               placeholder="Category">
-                    </div>
 
                     <button id="submit" type="submit" class="btn btn-primary">Submit</button>
                     <a type="button" class="btn btn-primary" href="/node/all">Back</a>

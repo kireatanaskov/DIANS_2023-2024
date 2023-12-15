@@ -12,7 +12,7 @@ import java.util.Map;
 public class OpenStreetMapService {
     private static final String OPENSTREETMAP_API_URL = "https://nominatim.openstreetmap.org/search?format=json&q=";
 
-    public Node getNodeInfo(String nodeName, String category) {
+    public Node getNodeInfo(String nodeName) {
 
         if (isNumeric(nodeName)) {
             throw new NotFoundException("Node name cannot be a number");
@@ -29,6 +29,7 @@ public class OpenStreetMapService {
             Long id = Long.parseLong(firstResult.get("osm_id").toString());
             double longitude = Double.parseDouble(firstResult.get("lon").toString());
             double latitude = Double.parseDouble(firstResult.get("lat").toString());
+            String category = firstResult.get("type").toString();
 
             return new Node(id, nodeName, latitude, longitude, category);
         } else {
