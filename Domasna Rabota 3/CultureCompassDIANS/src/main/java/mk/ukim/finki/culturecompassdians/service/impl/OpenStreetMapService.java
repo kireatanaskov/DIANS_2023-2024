@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class OpenStreetMapService {
@@ -41,7 +42,7 @@ public class OpenStreetMapService {
 
             Long id = Long.parseLong(firstResult.get("osm_id").toString());
             if (nodeExists(id)) {
-                throw new NodeAlreadyExistsException("Node with ID " + id + " already exists");
+                throw new NodeAlreadyExistsException("Node with name " + nodeName + " already exists");
             }
             double longitude = Double.parseDouble(firstResult.get("lon").toString());
             double latitude = Double.parseDouble(firstResult.get("lat").toString());

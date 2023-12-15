@@ -7,8 +7,15 @@
             width: 200px;
         }
     </style>
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">CULTURE COMPASS</h1>
+            <h3 class="jumbotron-heading">All nodes</h3>
+        </div>
+    </section>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     <div>
         <form method="GET" action="/node/filteredByCategory">
@@ -22,6 +29,8 @@
         </form>
     </div>
 =======
+=======
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
   <div class="row" style="margin: 0;"> 
     <div class="col-4" style="padding: 0;">
       <div id="additional-info"></div>
@@ -51,14 +60,18 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: ''
     }).addTo(map);
+<<<<<<< HEAD
 >>>>>>> 9f660dd9e2fc316db4437536d3f07f5bf4a4e260
+=======
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
 
     let markers = [];
-    let coordinates = [];
+
 
     nodes.forEach(function (node) {
         let marker = L.marker([node.latitude, node.longitude])  
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     <script th:inline="javascript">
         let nodes = [(${nodes})];
@@ -82,14 +95,29 @@
             displayInfo(node);
             changeColorAndFocus(marker, markers);
 >>>>>>> 9f660dd9e2fc316db4437536d3f07f5bf4a4e260
+=======
+        marker.on('click', function (e) {
+            displayInfo(node);
+            changeColorAndFocus(marker, markers);
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
         });
 
         markers.push(marker);
 
-        coordinates.push([node.latitude, node.longitude]);
     });
 
     let markerGroup = L.featureGroup(markers).addTo(map);
+
+//         let markers = [];
+
+//         nodes.forEach(function (node) {
+//             let marker = L.marker([node.latitude, node.longitude])
+//                 .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br>'
+//                     + '<button onclick="editNode(' + node.id + ')">Edit</button>'
+//                     + '<button onclick="getLocation(' + node.latitude + ',' + node.longitude + ')">Navigate</button>'
+//                 );
+//             markers.push(marker);
+//         });
 
     map.fitBounds(markerGroup.getBounds());
 
@@ -127,6 +155,9 @@
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
         let userLatitude;
         let userLongitude;
 
@@ -168,6 +199,7 @@
                 console.error("Error sending location:", error);
             });
         }
+<<<<<<< HEAD
     </script>
 
     <div class="col mb-3">
@@ -180,6 +212,9 @@
         </div>
     </div>
 =======
+=======
+      
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
         paragraph.textContent = node_explanation.join("");
         locations.textContent = `${node.latitude}, ${node.longitude}`;
 
@@ -210,6 +245,7 @@
       map.setView(marker.getLatLng(), 16);
     }
 
+<<<<<<< HEAD
     const getLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -261,6 +297,11 @@
             console.error("Error sending location:", error);
           });
         }
+=======
+    const resetMap = () => {
+      map.setView([41.6086, 21.7453], 9);
+    }
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
     </script>
 
 <div class="col mb-3">
@@ -272,5 +313,8 @@
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 >>>>>>> 9f660dd9e2fc316db4437536d3f07f5bf4a4e260
+=======
+>>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
 </div>
