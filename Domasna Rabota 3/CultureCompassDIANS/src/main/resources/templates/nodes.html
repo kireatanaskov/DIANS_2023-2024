@@ -1,19 +1,24 @@
 <div xmlns:th="http://www.thymeleaf.org">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         .custom-dropdown {
-            width: 200px; /* Set your desired width */
+            width: 200px;
         }
     </style>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <section class="jumbotron text-center">
-        <div class="container">
-            <h1 class="jumbotron-heading">CULTURE COMPASS</h1>
-            <h3 class="jumbotron-heading">All nodes</h3>
-        </div>
-    </section>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <button onclick="getLocation()">Navigate</button>
+  <div class="row" style="margin: 0;"> 
+    <div class="col-4" style="padding: 0;">
+      <div id="additional-info"></div>
+    </div>
+
+    <div class="col-8" style="padding: 0;">
+      <div id="map" style="height: 600px"></div>
+    </div>
+  </div>
+    
 <div>
     <form method="GET" action="/node/filteredByCategory">
         <label for="dropdown">Choose a category:</label>
@@ -25,58 +30,119 @@
         <input type="submit">
     </form>
 </div>
+  
+  <script th:inline="javascript">
+    let nodes = [(${nodes})];
+    let map = L.map("map")
+        .setView([41.6086, 21.7453], 9); // Skopje
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+    }).addTo(map);
 
-    <div id="map" th:style="'height: 500px; width: 500px; margin: 0 auto;'"></div>
+    let markers = [];
+    let coordinates = [];
 
+    nodes.forEach(function (node) {
+        let marker = L.marker([node.latitude, node.longitude])  
 
-    <script th:inline="javascript">
-        let nodes = [(${nodes})];
-        let map = L.map("map")
-            .setView([41.6086, 21.7453], 8); // Macedonia
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: ''
-        }).addTo(map);
-
-        let markers = [];
-        let coordinates = [];
-
-        nodes.forEach(function (node) {
-            let marker = L.marker([node.latitude, node.longitude])
-                .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br><button onclick="editNode(' + node.id + ')">Edit</button>');
-            markers.push(marker);
-
-            coordinates.push([node.latitude, node.longitude]);
+        marker.on('click', function (e) {
+            displayInfo(node);
+            changeColorAndFocus(marker, markers);
         });
 
-        let markerGroup = L.featureGroup(markers).addTo(map);
+        markers.push(marker);
 
-        map.fitBounds(markerGroup.getBounds());
+        coordinates.push([node.latitude, node.longitude]);
+    });
 
-        function editNode(nodeId) {
-          window.location.href = '/node/edit-form/' + nodeId;
+    let markerGroup = L.featureGroup(markers).addTo(map);
+
+    map.fitBounds(markerGroup.getBounds());
+
+    function editNode(nodeId) {
+        window.location.href = '/node/edit-form/' + nodeId;
+    }
+
+    const displayInfo = (node) => {
+        $("#additional-info").empty();  // Clear previous node data
+
+        let mainDiv = $("#additional-info")
+
+        let res = document.createElement("div");
+        let paragraph = document.createElement("h3")
+        let locations = document.createElement("p")
+        let resetMap = document.createElement("button");
+        let editButton = document.createElement("button");
+        let navigateButton = document.createElement("button");
+     
+        resetMap.setAttribute("onclick", "resetMap()");
+        resetMap.textContent = "Reset Map";
+
+        editButton.setAttribute("onclick", `editNode(${node.id})`);
+        editButton.textContent = "Edit";
+
+        navigateButton.setAttribute("onclick", "getLocation()");
+        navigateButton.textContent = "GPS";
+
+        let node_explanation = []
+        node_explanation.push("Information about: ");
+        node_explanation.push(node.name);
+        console.log(node.wikipediaData);
+        if(node.wikipediaData) {
+          node_explanation.push("Additional wiki data: ", node.wikipediaData);
         }
 
-        // Getting location
-        const getLocation = () => {
-            // Get the location from the user
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+        paragraph.textContent = node_explanation.join("");
+        locations.textContent = `${node.latitude}, ${node.longitude}`;
 
-                    console.log(latitude, longitude);
+        res.setAttribute("class", "container");
+        res.appendChild(paragraph);
+        res.appendChild(locations);
+        res.appendChild(resetMap);
+        res.appendChild(editButton);
+        res.appendChild(navigateButton);
 
-                    // Send location to the server using AJAX
-                    sendLocationToServer(latitude, longitude);
-                }, function () {
-                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.")
-            }
-        };
+        mainDiv.append(res);
+    }
 
-        function sendLocationToServer(latitude, longitude) {
+    const changeColorAndFocus = (marker, markers) => {
+      markers.forEach((m) => {
+        m.setIcon(new L.Icon.Default());
+      });
+
+      marker.setIcon(new L.Icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                tooltipAnchor: [16, -28],
+                shadowSize: [41, 41]
+            }))
+
+      map.setView(marker.getLatLng(), 16);
+    }
+
+    const getLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                console.log(latitude, longitude);
+
+                sendLocationToServer(latitude, longitude);
+            }, function () {
+                alert("Geolocation access is blocked. Please update your browser settings to allow access.")
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.")
+        }
+    };
+
+    const resetMap = () => {
+      map.setView([41.6086, 21.7453], 9);
+    }
+    function sendLocationToServer(latitude, longitude) {
           let endLat = 41.9983057;
           let endLon = 21.4254968;
 
@@ -104,16 +170,13 @@
         }
     </script>
 
-  <div class="col mb-3">
-    <div class="row">
-      <div class="col-sm-5 col-md-6">
-        <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
-          Add new node
-        </a>
-      </div>
+<div class="col mb-3">
+    <div class="col-sm-2 col-md-2">
+      <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
+        Add new node
+      </a>
     </div>
-  </div>
-
+</div>
 </div>
 </div>
 </div>
