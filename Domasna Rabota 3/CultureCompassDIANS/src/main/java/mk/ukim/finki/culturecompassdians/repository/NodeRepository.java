@@ -12,7 +12,10 @@ import java.util.List;
 @Repository
 public interface NodeRepository extends JpaRepository<Node, Long> {
 
-    @Query("SELECT n FROM Node n WHERE LOWER(n.category) LIKE %:text% OR LOWER(n.name) LIKE %:text%")
-    List<Node> findByCategoryOrNameContaining(@Param("text") String text);
+    @Query("SELECT n FROM Node n WHERE LOWER(n.name) LIKE %:text%")
+    List<Node> findByName(@Param("text") String text);
+    List<Node> findByCategory(String text);
 
+    @Query("SELECT DISTINCT n.category FROM Node n")
+    List<String> findAllCategories();
 }

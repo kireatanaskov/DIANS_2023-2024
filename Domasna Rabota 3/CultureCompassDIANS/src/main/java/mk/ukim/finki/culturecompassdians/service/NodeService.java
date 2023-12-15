@@ -11,7 +11,9 @@ public interface NodeService {
 
     Optional<Node> findNodeById(Long id);
 
-    List<Node> findByCategoryOrName(String text);
+    List<Node> findByNameContaining(String text);
+    List<Node> findByCategory(String text);
+    List<String> findAllCategories();
 
     Node saveNode(Node point);
 
