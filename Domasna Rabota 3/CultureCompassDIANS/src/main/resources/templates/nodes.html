@@ -1,118 +1,74 @@
 <div xmlns:th="http://www.thymeleaf.org">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         .custom-dropdown {
             width: 200px;
         }
     </style>
+
     <section class="jumbotron text-center">
         <div class="container">
             <h1 class="jumbotron-heading">CULTURE COMPASS</h1>
             <h3 class="jumbotron-heading">All nodes</h3>
         </div>
     </section>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-  <div class="row" style="margin: 0;"> 
-    <div class="col-4" style="padding: 0;">
-      <div id="additional-info"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <div class="row" style="margin: 0;">
+        <div class="col-4" style="padding: 0;">
+            <div id="additional-info"></div>
+        </div>
+
+        <div class="col-8" style="padding: 0;">
+            <div id="map" style="height: 600px"></div>
+        </div>
     </div>
 
-    <div class="col-8" style="padding: 0;">
-      <div id="map" style="height: 600px"></div>
+    <div>
+        <form method="GET" action="/node/filteredByCategory">
+            <label for="dropdown">Choose a category:</label>
+            <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
+                <option th:each="category : ${categories}">
+                    <th:block th:value="${category}" th:text="${category}"></th:block>
+                </option>
+            </select>
+            <input type="submit">
+        </form>
     </div>
-  </div>
-    
-<div>
-    <form method="GET" action="/node/filteredByCategory">
-        <label for="dropdown">Choose a category:</label>
-        <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
-            <option th:each="category : ${categories}">
-                <th:block th:value="${category}" th:text="${category}"></th:block>
-            </option>
-        </select>
-        <input type="submit">
-    </form>
-</div>
-  
-  <script th:inline="javascript">
-    let nodes = [(${nodes})];
-    let map = L.map("map")
-        .setView([41.6086, 21.7453], 9); // Skopje
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: ''
-    }).addTo(map);
 
-    let markers = [];
+    <script th:inline="javascript">
+        let nodes = [(${nodes})];
+        let map = L.map("map")
+            .setView([41.6086, 21.7453], 9); // Skopje
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: ''
+        }).addTo(map);
 
+        let markers = [];
 
-    nodes.forEach(function (node) {
-        let marker = L.marker([node.latitude, node.longitude])  
+        nodes.forEach(function (node) {
+            let marker = L.marker([node.latitude, node.longitude])
 
-        marker.on('click', function (e) {
-            displayInfo(node);
-            changeColorAndFocus(marker, markers);
+            marker.on('click', function (e) {
+                displayInfo(node);
+                changeColorAndFocus(marker, markers);
+            });
+
+            markers.push(marker);
         });
 
-        markers.push(marker);
+        let markerGroup = L.featureGroup(markers).addTo(map);
 
-    });
+        map.fitBounds(markerGroup.getBounds());
 
-    let markerGroup = L.featureGroup(markers).addTo(map);
-
-//         let markers = [];
-
-//         nodes.forEach(function (node) {
-//             let marker = L.marker([node.latitude, node.longitude])
-//                 .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br>'
-//                     + '<button onclick="editNode(' + node.id + ')">Edit</button>'
-//                     + '<button onclick="getLocation(' + node.latitude + ',' + node.longitude + ')">Navigate</button>'
-//                 );
-//             markers.push(marker);
-//         });
-
-    map.fitBounds(markerGroup.getBounds());
-
-    function editNode(nodeId) {
-        window.location.href = '/node/edit-form/' + nodeId;
-    }
-
-    const displayInfo = (node) => {
-        $("#additional-info").empty();  // Clear previous node data
-
-        let mainDiv = $("#additional-info")
-
-        let res = document.createElement("div");
-        let paragraph = document.createElement("h3")
-        let locations = document.createElement("p")
-        let resetMap = document.createElement("button");
-        let editButton = document.createElement("button");
-        let navigateButton = document.createElement("button");
-     
-        resetMap.setAttribute("onclick", "resetMap()");
-        resetMap.textContent = "Reset Map";
-
-        editButton.setAttribute("onclick", `editNode(${node.id})`);
-        editButton.textContent = "Edit";
-
-        navigateButton.setAttribute("onclick", "getLocation()");
-        navigateButton.textContent = "GPS";
-
-        let node_explanation = []
-        node_explanation.push("Information about: ");
-        node_explanation.push(node.name);
-        console.log(node.wikipediaData);
-        if(node.wikipediaData) {
-          node_explanation.push("Additional wiki data: ", node.wikipediaData);
+        function editNode(nodeId) {
+            window.location.href = '/node/edit-form/' + nodeId;
         }
-
-        let userLatitude;
-        let userLongitude;
-
         // Getting location
-        const getLocation = (nodeLatitude, nodeLongitude) => {
+        function getLocation(nodeLatitude, nodeLongitude) {
             // Get the location from the user
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -128,7 +84,10 @@
             } else {
                 alert("Geolocation is not supported by this browser.")
             }
-        };
+        }
+
+        let userLatitude;
+        let userLongitude;
 
         function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
             console.log("Before fetch");
@@ -149,26 +108,55 @@
                 console.error("Error sending location:", error);
             });
         }
-      
-        paragraph.textContent = node_explanation.join("");
-        locations.textContent = `${node.latitude}, ${node.longitude}`;
 
-        res.setAttribute("class", "container");
-        res.appendChild(paragraph);
-        res.appendChild(locations);
-        res.appendChild(resetMap);
-        res.appendChild(editButton);
-        res.appendChild(navigateButton);
+        const displayInfo = (node) => {
+            $("#additional-info").empty();  // Clear previous node data
 
-        mainDiv.append(res);
-    }
+            let mainDiv = $("#additional-info")
 
-    const changeColorAndFocus = (marker, markers) => {
-      markers.forEach((m) => {
-        m.setIcon(new L.Icon.Default());
-      });
+            let res = document.createElement("div");
+            let paragraph = document.createElement("h3")
+            let locations = document.createElement("p")
+            let resetMap = document.createElement("button");
+            let editButton = document.createElement("button");
+            let navigateButton = document.createElement("button");
 
-      marker.setIcon(new L.Icon({
+            resetMap.setAttribute("onclick", "resetMap()");
+            resetMap.textContent = "Reset Map";
+
+            editButton.setAttribute("onclick", `editNode(${node.id})`);
+            editButton.textContent = "Edit";
+
+            navigateButton.setAttribute("onclick", `getLocation(${node.latitude}, ${node.longitude})`);
+            navigateButton.textContent = "Navigate";
+
+            let node_explanation = []
+            node_explanation.push("Information about: ");
+            node_explanation.push(node.name);
+            console.log(node.wikipediaData);
+            if (node.wikipediaData) {
+                node_explanation.push("Additional wiki data: ", node.wikipediaData);
+            }
+
+            paragraph.textContent = node_explanation.join("");
+            locations.textContent = `${node.latitude}, ${node.longitude}`;
+
+            res.setAttribute("class", "container");
+            res.appendChild(paragraph);
+            res.appendChild(locations);
+            res.appendChild(resetMap);
+            res.appendChild(editButton);
+            res.appendChild(navigateButton);
+
+            mainDiv.append(res);
+        }
+
+        const changeColorAndFocus = (marker, markers) => {
+            markers.forEach((m) => {
+                m.setIcon(new L.Icon.Default());
+            });
+
+            marker.setIcon(new L.Icon({
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
@@ -177,21 +165,21 @@
                 shadowSize: [41, 41]
             }))
 
-      map.setView(marker.getLatLng(), 16);
-    }
+            map.setView(marker.getLatLng(), 16);
+        }
 
-    const resetMap = () => {
-      map.setView([41.6086, 21.7453], 9);
-    }
+        const resetMap = () => {
+            map.setView([41.6086, 21.7453], 9);
+        }
     </script>
 
-<div class="col mb-3">
-    <div class="col-sm-2 col-md-2">
-      <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
-        Add new node
-      </a>
+    <div class="col mb-3">
+        <div class="col-sm-2 col-md-2">
+            <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
+                Add new node
+            </a>
+        </div>
     </div>
-</div>
 </div>
 </div>
 </div>
