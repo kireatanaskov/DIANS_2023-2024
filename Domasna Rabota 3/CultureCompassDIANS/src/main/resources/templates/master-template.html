@@ -41,14 +41,15 @@
             </li>
         </ul>
 
-        <form class="form-inline my-2 my-lg-0 ml-auto" action="/node/all">
-            <input class="form-control mr-sm-2 rounded-pill" type="search" name="search" placeholder="Search" aria-label="Search">
+        <form class="form-inline my-2 my-lg-0 ml-auto" method="GET" action="/node/filteredByName">
+            <input class="form-control mr-sm-2 rounded-pill" type="search" name="search" placeholder="Search"
+                   aria-label="Search">
             <button class="btn btn-outline-light rounded-pill" type="submit">Search</button>
         </form>
     </div>
 </nav>
 
 <body>
-    <section th:replace="${bodyContent}"></section>
+<section th:replace="${bodyContent}"></section>
 </body>
 </html>

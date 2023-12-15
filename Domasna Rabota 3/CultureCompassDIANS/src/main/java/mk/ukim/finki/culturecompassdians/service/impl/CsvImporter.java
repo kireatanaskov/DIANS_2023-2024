@@ -2,6 +2,7 @@ package mk.ukim.finki.culturecompassdians.service.impl;
 
 import mk.ukim.finki.culturecompassdians.model.Node;
 import mk.ukim.finki.culturecompassdians.model.Way;
+import mk.ukim.finki.culturecompassdians.service.CSVReaderService;
 import mk.ukim.finki.culturecompassdians.service.NodeService;
 import mk.ukim.finki.culturecompassdians.service.WayService;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +16,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 @Component
-public class CsvImporter implements CommandLineRunner {
+public class CsvImporter implements CSVReaderService {
 
     private final NodeService nodeService;
     private final WayService wayService;
@@ -27,16 +28,9 @@ public class CsvImporter implements CommandLineRunner {
         this.wayService = wayService;
     }
 
-    // Read Nodes from csv file on startup
-    @Override
-    public void run(String... args) throws IOException {
-        saveNodes();
-        saveWays();
-        updateNodes();
-    }
 
     // Skip first line (id, name, category)
-    private void saveWays() throws IOException {
+    public void saveWays() throws IOException {
         ClassPathResource resource = new ClassPathResource(WAYS_PATH);
         InputStream is = resource.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -53,7 +47,7 @@ public class CsvImporter implements CommandLineRunner {
         reader.close();
     }
 
-    private void saveNodes() throws IOException {
+    public void saveNodes() throws IOException {
         ClassPathResource resource = new ClassPathResource(NODES_PATH);
         InputStream is = resource.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -72,7 +66,7 @@ public class CsvImporter implements CommandLineRunner {
         reader.close();
     }
 
-    private void updateNodes() {
+    public void updateNodes() {
         List<Node> nodes = nodeService.findAllNodes();
         nodes.forEach(node -> {
             String OSM_URL = "https://www.openstreetmap.org/node/" + node.getId();

@@ -5,6 +5,7 @@ import mk.ukim.finki.culturecompassdians.model.User;
 import mk.ukim.finki.culturecompassdians.model.exception.InvalidArgumentsException;
 import mk.ukim.finki.culturecompassdians.model.exception.InvalidUserCredentialsException;
 import mk.ukim.finki.culturecompassdians.service.AuthService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class LoginController {
 
 
     @GetMapping
+//    @PreAuthorize("hasRole('ROLE_ADMIN')") ne e za ovde, to be used
     public String getLoginPage(Model model) {
         model.addAttribute("bodyContent", "login");
         return "master-template";

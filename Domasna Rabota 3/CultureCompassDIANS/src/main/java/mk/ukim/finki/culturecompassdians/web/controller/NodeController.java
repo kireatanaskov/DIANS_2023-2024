@@ -32,19 +32,38 @@ public class NodeController {
 
     @GetMapping("/all")
     public String getAllPoints(@RequestParam(required = false) String error,
-                               @RequestParam(required = false) String search,
                                Model model) throws JsonProcessingException {
         if(error != null && !error.isEmpty()) {
             model.addAttribute("hasError",true);
             model.addAttribute("error",error);
         }
         List<Node> allNodes = nodeService.findAllNodes();
-        if (search != null) {
-            allNodes = nodeService.findByCategoryOrName(search);
-        }
         String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
+        model.addAttribute("categories", nodeService.findAllCategories());
+        return "master-template";
+    }
+
+    @GetMapping("/filteredByName")
+    public String getByName(@RequestParam String search,
+                               Model model) throws JsonProcessingException {
+        List<Node> allNodes = nodeService.findByNameContaining(search);
+        String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
+        model.addAttribute("nodes", nodesFormatted);
+        model.addAttribute("bodyContent", "nodes");
+        model.addAttribute("categories", nodeService.findAllCategories());
+        return "master-template";
+    }
+
+    @GetMapping("/filteredByCategory")
+    public String getByCategory(@RequestParam String category,
+                               Model model) throws JsonProcessingException {
+        List<Node> allNodes = nodeService.findByCategory(category);
+        String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
+        model.addAttribute("nodes", nodesFormatted);
+        model.addAttribute("bodyContent", "nodes");
+        model.addAttribute("categories", nodeService.findAllCategories());
         return "master-template";
     }
 
