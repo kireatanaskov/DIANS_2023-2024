@@ -28,8 +28,18 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public List<Node> findByCategoryOrName(String text) {
-        return nodeRepository.findByCategoryOrNameContaining(text.toLowerCase());
+    public List<Node> findByNameContaining(String text) {
+        return nodeRepository.findByName(text.toLowerCase());
+    }
+
+    @Override
+    public List<Node> findByCategory(String text) {
+        return nodeRepository.findByCategory(text);
+    }
+
+    @Override
+    public List<String> findAllCategories() {
+        return nodeRepository.findAllCategories();
     }
 
     @Override

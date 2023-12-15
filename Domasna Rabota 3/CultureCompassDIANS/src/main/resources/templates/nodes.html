@@ -1,5 +1,12 @@
 <div xmlns:th="http://www.thymeleaf.org">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        .custom-dropdown {
+            width: 200px;
+        }
+    </style>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <div class="row" style="margin: 0;"> 
@@ -11,6 +18,19 @@
       <div id="map" style="height: 600px"></div>
     </div>
   </div>
+    
+<div>
+    <form method="GET" action="/node/filteredByCategory">
+        <label for="dropdown">Choose a category:</label>
+        <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
+            <option th:each="category : ${categories}">
+                <th:block th:value="${category}" th:text="${category}"></th:block>
+            </option>
+        </select>
+        <input type="submit">
+    </form>
+</div>
+  
   <script th:inline="javascript">
     let nodes = [(${nodes})];
     let map = L.map("map")
@@ -23,7 +43,7 @@
     let coordinates = [];
 
     nodes.forEach(function (node) {
-        let marker = L.marker([node.latitude, node.longitude])
+        let marker = L.marker([node.latitude, node.longitude])  
 
         marker.on('click', function (e) {
             displayInfo(node);
@@ -102,9 +122,7 @@
       map.setView(marker.getLatLng(), 16);
     }
 
-    // Getting location
     const getLocation = () => {
-        // Get the location from the user
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 const latitude = position.coords.latitude;
@@ -112,7 +130,6 @@
 
                 console.log(latitude, longitude);
 
-                // Send location to the server using AJAX
                 sendLocationToServer(latitude, longitude);
             }, function () {
                 alert("Geolocation access is blocked. Please update your browser settings to allow access.")
@@ -125,19 +142,33 @@
     const resetMap = () => {
       map.setView([41.6086, 21.7453], 9);
     }
-
     function sendLocationToServer(latitude, longitude) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/map/findRoute", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("Location sent successfully!");
+          let endLat = 41.9983057;
+          let endLon = 21.4254968;
+
+          console.log("Before fetch")
+          fetch('/map/findRoute', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `startLat=${latitude}&startLon=${longitude}&endLat=${endLat}&endLon=${endLon}`,
+          }).then(response => {
+
+            console.log("Received response with status: " + response.status);
+
+            if (response.status === 200) {
+              console.log("Location sent successfully!");
+            } else if (response.status === 302) {
+              // Handle redirect manually
+              console.log("Redirecting to: " + response.headers.get("Location"));
+              window.location.href = response.headers.get("Location");
             }
-        };
-        xhr.send("latitude=" + latitude + "&longitude=" + longitude);
-    }
-  </script>
+          }).catch(error => {
+            console.error("Error sending location:", error);
+          });
+        }
+    </script>
 
 <div class="col mb-3">
     <div class="col-sm-2 col-md-2">
@@ -145,5 +176,7 @@
         Add new node
       </a>
     </div>
+</div>
+</div>
 </div>
 </div>
