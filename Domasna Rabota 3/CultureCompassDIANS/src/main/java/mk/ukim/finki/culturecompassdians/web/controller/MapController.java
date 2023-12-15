@@ -24,26 +24,11 @@ public class MapController {
                             @RequestParam("endLon") double endLon,
                             HttpSession session, Model model) {
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
         session.setAttribute("startLat", startLat);
         session.setAttribute("startLon", startLon);
         session.setAttribute("endLat", endLat);
         session.setAttribute("endLon", endLon);
         model.addAttribute("bodyContent", "navigate");
         return "master-template";
-<<<<<<< HEAD
-=======
-        model.addAttribute("startLat", startLat);
-        model.addAttribute("startLon", startLon);
-        model.addAttribute("endLat", endLat);
-        model.addAttribute("endLon", endLon);
-//        model.addAttribute("bodyContent", "map");
-        return "redirect:/";
->>>>>>> 9f660dd9e2fc316db4437536d3f07f5bf4a4e260
-=======
->>>>>>> 303725df8c4c41ced12c4410164a0c9a48751966
     }
 }
