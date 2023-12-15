@@ -77,15 +77,30 @@
         };
 
         function sendLocationToServer(latitude, longitude) {
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "/map/findRoute", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log("Location sent successfully!");
-                }
-            };
-            xhr.send("latitude=" + latitude + "&longitude=" + longitude);
+          let endLat = 41.9983057;
+          let endLon = 21.4254968;
+
+          console.log("Before fetch")
+          fetch('/map/findRoute', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `startLat=${latitude}&startLon=${longitude}&endLat=${endLat}&endLon=${endLon}`,
+          }).then(response => {
+
+            console.log("Received response with status: " + response.status);
+
+            if (response.status === 200) {
+              console.log("Location sent successfully!");
+            } else if (response.status === 302) {
+              // Handle redirect manually
+              console.log("Redirecting to: " + response.headers.get("Location"));
+              window.location.href = response.headers.get("Location");
+            }
+          }).catch(error => {
+            console.error("Error sending location:", error);
+          });
         }
     </script>
 

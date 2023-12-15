@@ -119,16 +119,16 @@ public class NodeController {
         return "redirect:/node/all?error=NodeNotFound";
     }
 
-    @PostMapping("/location")
-    @ResponseBody
-    public String receiveLocation(@RequestParam("latitude") double latitude,
-                                  @RequestParam("longitude") double longitude,
-                                  Model model) {
-        // Store latitude and longitude in variables
-        model.addAttribute("latitude", latitude);
-        model.addAttribute("longitude", longitude);
-
-        return "Location received successfully!";
-    }
+//    @PostMapping("/location")
+//    @ResponseBody
+//    public String receiveLocation(@RequestParam("latitude") double latitude,
+//                                  @RequestParam("longitude") double longitude,
+//                                  Model model) {
+//        // Store latitude and longitude in variables
+//        model.addAttribute("latitude", latitude);
+//        model.addAttribute("longitude", longitude);
+//
+//        return "Location received successfully!";
+//    }
 
 }
