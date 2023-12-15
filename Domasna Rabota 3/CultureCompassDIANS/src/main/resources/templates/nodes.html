@@ -2,7 +2,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         .custom-dropdown {
-            width: 200px; /* Set your desired width */
+            width: 200px;
         }
     </style>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -13,18 +13,17 @@
         </div>
     </section>
 
-    <button onclick="getLocation()">Navigate</button>
-<div>
-    <form method="GET" action="/node/filteredByCategory">
-        <label for="dropdown">Choose a category:</label>
-        <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
-            <option th:each="category : ${categories}">
-                <th:block th:value="${category}" th:text="${category}"></th:block>
-            </option>
-        </select>
-        <input type="submit">
-    </form>
-</div>
+    <div>
+        <form method="GET" action="/node/filteredByCategory">
+            <label for="dropdown">Choose a category:</label>
+            <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
+                <option th:each="category : ${categories}">
+                    <th:block th:value="${category}" th:text="${category}"></th:block>
+                </option>
+            </select>
+            <input type="submit">
+        </form>
+    </div>
 
     <div id="map" th:style="'height: 500px; width: 500px; margin: 0 auto;'"></div>
 
@@ -38,14 +37,14 @@
         }).addTo(map);
 
         let markers = [];
-        let coordinates = [];
 
         nodes.forEach(function (node) {
             let marker = L.marker([node.latitude, node.longitude])
-                .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br><button onclick="editNode(' + node.id + ')">Edit</button>');
+                .bindPopup(node.name + '<br>Category: ' + node.category + '<br>' + node.wikipediaData + '<br>'
+                    + '<button onclick="editNode(' + node.id + ')">Edit</button>'
+                    + '<button onclick="getLocation(' + node.latitude + ',' + node.longitude + ')">Navigate</button>'
+                );
             markers.push(marker);
-
-            coordinates.push([node.latitude, node.longitude]);
         });
 
         let markerGroup = L.featureGroup(markers).addTo(map);
@@ -56,18 +55,20 @@
           window.location.href = '/node/edit-form/' + nodeId;
         }
 
+        let userLatitude;
+        let userLongitude;
+
         // Getting location
-        const getLocation = () => {
+        const getLocation = (nodeLatitude, nodeLongitude) => {
             // Get the location from the user
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
 
-                    console.log(latitude, longitude);
+                    console.log(userLatitude, userLongitude); // For kind of debugging purposes
 
-                    // Send location to the server using AJAX
-                    sendLocationToServer(latitude, longitude);
+                    sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude);
                 }, function () {
                     alert("Geolocation access is blocked. Please update your browser settings to allow access.")
                 });
@@ -76,44 +77,34 @@
             }
         };
 
-        function sendLocationToServer(latitude, longitude) {
-          let endLat = 41.9983057;
-          let endLon = 21.4254968;
+        function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
+            console.log("Before fetch");
+            fetch('/map/findRoute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
+                body: `startLat=${userLatitude}&startLon=${userLongitude}&endLat=${nodeLatitude}&endLon=${nodeLongitude}`,
+            }).then(response => {
+                console.log("Received response with status: " + response.status); // For kind of debugging purposes
 
-          console.log("Before fetch")
-          fetch('/map/findRoute', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `startLat=${latitude}&startLon=${longitude}&endLat=${endLat}&endLon=${endLon}`,
-          }).then(response => {
-
-            console.log("Received response with status: " + response.status);
-
-            if (response.status === 200) {
-              console.log("Location sent successfully!");
-            } else if (response.status === 302) {
-              // Handle redirect manually
-              console.log("Redirecting to: " + response.headers.get("Location"));
-              window.location.href = response.headers.get("Location");
-            }
-          }).catch(error => {
-            console.error("Error sending location:", error);
-          });
+                if (response.status === 200) {
+                    console.log("Location sent successfully!");
+                    window.location.href = '/map';
+                } else {
+                    alert("Error getting location");
+                }
+            }).catch(error => {
+                console.error("Error sending location:", error);
+            });
         }
     </script>
 
-  <div class="col mb-3">
-    <div class="row">
-      <div class="col-sm-5 col-md-6">
-        <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
-          Add new node
-        </a>
-      </div>
+    <div class="col mb-3">
+        <div class="row">
+            <div class="col-sm-5 col-md-6">
+                <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
+                    Add new node
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
-
-</div>
-</div>
 </div>
