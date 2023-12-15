@@ -19,17 +19,6 @@ public class CultureCompassDiansApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-//            System.out.println("Inspecting beans provided by SpringBoot:");
-//            String[] beanNames = ctx.getBeanDefinitionNames();
-//            Arrays.sort(beanNames);
-//            Arrays.stream(beanNames)
-//                    .forEach(System.out::println);
-        };
-    }
-
-    @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(10);
     }

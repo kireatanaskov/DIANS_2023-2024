@@ -20,4 +20,6 @@ public interface NodeService {
     void saveAll(List<Node> nodes);
 
     void deleteNodeById(Long id);
+    Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category);
+
 }
