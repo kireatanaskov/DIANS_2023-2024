@@ -96,23 +96,13 @@ public class NodeController {
             model.addAttribute("newNode", savedNode);
 
             return "redirect:/node/all";
-        } catch (NotFoundException e) {
-            //String errorMessage = e.getErrorMessage();
-            model.addAttribute("errorMessage", e.getErrorMessage());
-            return "add-page";
-        } catch (NodeAlreadyExistsException e) {
-            //String errorMessage = e.getErrorMessage();
-            model.addAttribute("errorMessage", e.getErrorMessage());
-            return "add-page";
-        } catch (InvalidCoordinatesException e) {
-            //String errorMessage = e.getErrorMessage();
-            model.addAttribute("errorMessage", e.getErrorMessage());
-            return "add-page";
-        }catch (InvalidNameForNode e) {
-            model.addAttribute("errorMessage", e.getErrorMessage());
-            return "add-page";
-        }
+        } catch (NotFoundException | NodeAlreadyExistsException | InvalidCoordinatesException | InvalidNameForNode e) {
+            model.addAttribute("newNode", new Node());
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("bodyContent", "add-page");
 
+            return "master-template";
+        }
     }
 
     @GetMapping("/add-form")
