@@ -3,6 +3,9 @@ package mk.ukim.finki.culturecompassdians.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mk.ukim.finki.culturecompassdians.model.Node;
+import mk.ukim.finki.culturecompassdians.model.exception.InvalidCoordinatesException;
+import mk.ukim.finki.culturecompassdians.model.exception.InvalidNameForNode;
+import mk.ukim.finki.culturecompassdians.model.exception.NodeAlreadyExistsException;
 import mk.ukim.finki.culturecompassdians.model.exception.NotFoundException;
 import mk.ukim.finki.culturecompassdians.service.NodeService;
 import mk.ukim.finki.culturecompassdians.service.impl.OpenStreetMapService;
@@ -82,41 +85,59 @@ public class NodeController {
     @PostMapping("/add")
     public String saveNode(@ModelAttribute Node newNode, Model model) {
         try {
-            Node node = openStreetMapService.getNodeInfo(newNode.getName(), newNode.getCategory());
+            Node node = openStreetMapService.getNodeInfo(newNode.getName());
 
             newNode.setId(node.getId());
             newNode.setLongitude(node.getLongitude());
             newNode.setLatitude(node.getLatitude());
             newNode.setCategory(node.getCategory());
+            newNode.setStars(1.0);
+            newNode.setNumStars(1);
+            newNode.setRating(newNode.getRating());
+            newNode.setWikipediaData("");
 
             Node savedNode = this.nodeService.saveNode(newNode);
             model.addAttribute("newNode", savedNode);
 
             return "redirect:/node/all";
-        } catch (NotFoundException e) {
-            model.addAttribute("errorMessage", "Node not found on OpenStreetMap for name: " + newNode.getName());
-            return "add-page";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Error while saving the node");
-            return "add-page";
+        } catch (NotFoundException | NodeAlreadyExistsException | InvalidCoordinatesException | InvalidNameForNode e) {
+            model.addAttribute("newNode", new Node());
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("bodyContent", "add-page");
+
+            return "master-template";
         }
     }
 
     @GetMapping("/add-form")
     public String addNodePage(Model model) {
         model.addAttribute("newNode", new Node());
-        return "add-page";
+        model.addAttribute("bodyContent","add-page");
+        return "master-template";
     }
+
+    // TODO edit the rating
 
     @GetMapping("/edit-form/{id}")
     public String editNodePage(@PathVariable Long id, Model model) {
         if (this.nodeService.findNodeById(id).isPresent()) {
             Node node = this.nodeService.findNodeById(id).get();
             model.addAttribute("newNode", node);
-            return "edit-page";
+            model.addAttribute("bodyContent","edit-page");
+            return "master-template";
         }
         return "redirect:/node/all?error=NodeNotFound";
+    }
+
+    @GetMapping("/updateRating/{id}")
+    public String updateRating(@PathVariable Long id,
+                               @RequestParam String userRating) {
+        Node node = this.nodeService.findNodeById(id).get();
+        node.setStars(node.getStars()+Double.parseDouble(userRating));
+        node.setNumStars(node.getNumStars()+1);
+        nodeService.deleteNodeById(id);
+        nodeService.saveNode(node);
+        return "redirect:/node/all";
     }
 
 //    @PostMapping("/location")

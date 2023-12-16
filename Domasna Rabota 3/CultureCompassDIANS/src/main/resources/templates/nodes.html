@@ -6,6 +6,8 @@
             width: 200px;
         }
     </style>
+
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <div class="row" style="margin: 0;">
@@ -39,7 +41,6 @@
         }).addTo(map);
 
         let markers = [];
-        let coordinates = [];
 
         nodes.forEach(function (node) {
             let marker = L.marker([node.latitude, node.longitude])
@@ -50,8 +51,6 @@
             });
 
             markers.push(marker);
-
-            coordinates.push([node.latitude, node.longitude]);
         });
 
         let markerGroup = L.featureGroup(markers).addTo(map);
@@ -60,6 +59,52 @@
 
         function editNode(nodeId) {
             window.location.href = '/node/edit-form/' + nodeId;
+        }
+        // Getting location
+        function getLocation(nodeLatitude, nodeLongitude) {
+            // Get the location from the user
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+
+                    console.log(userLatitude, userLongitude); // For kind of debugging purposes
+
+                    sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude);
+                }, function () {
+                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.")
+            }
+        }
+
+        let userLatitude;
+        let userLongitude;
+
+        function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
+            console.log("Before fetch");
+            fetch('/map/findRoute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
+                body: `startLat=${userLatitude}&startLon=${userLongitude}&endLat=${nodeLatitude}&endLon=${nodeLongitude}`,
+            }).then(response => {
+                console.log("Received response with status: " + response.status); // For kind of debugging purposes
+
+                if (response.status === 200) {
+                    console.log("Location sent successfully!");
+                    window.location.href = '/map';
+                } else {
+                    alert("Error getting location");
+                }
+            }).catch(error => {
+                console.error("Error sending location:", error);
+            });
+        }
+
+        function rateNode(ratingValue, nodeId) {
+            console.log("User rated:", ratingValue);
+            window.location.href = '/node/updateRating/' + nodeId + '?userRating=' + ratingValue;
         }
 
         const displayInfo = (node) => {
@@ -73,6 +118,9 @@
             let resetMap = document.createElement("button");
             let editButton = document.createElement("button");
             let navigateButton = document.createElement("button");
+            let ratingIntroText = document.createElement("p");
+            let rating = document.createElement("p");
+            let starContainer = document.createElement("div");
 
             resetMap.setAttribute("onclick", "resetMap()");
             resetMap.textContent = "Reset Map";
@@ -80,8 +128,8 @@
             editButton.setAttribute("onclick", `editNode(${node.id})`);
             editButton.textContent = "Edit";
 
-            navigateButton.setAttribute("onclick", "getLocation()");
-            navigateButton.textContent = "GPS";
+            navigateButton.setAttribute("onclick", `getLocation(${node.latitude}, ${node.longitude})`);
+            navigateButton.textContent = "Navigate";
 
             let node_explanation = []
             node_explanation.push("Information about: ");
@@ -91,8 +139,19 @@
                 node_explanation.push("Additional wiki data: ", node.wikipediaData);
             }
 
+            for (let i = 1; i <= 5; i++) {
+                let star = document.createElement("button");
+                star.innerHTML = "&#9733;";
+                star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                starContainer.appendChild(star);
+            }
+
             paragraph.textContent = node_explanation.join("");
             locations.textContent = `${node.latitude}, ${node.longitude}`;
+            ratingIntroText.textContent = `Current rating:`;
+            ratingIntroText.style.paddingTop = "10px";
+            ratingIntroText.style.marginBottom = "0px";
+            rating.textContent = `${node.rating.toFixed(2)}`;
 
             res.setAttribute("class", "container");
             res.appendChild(paragraph);
@@ -100,6 +159,9 @@
             res.appendChild(resetMap);
             res.appendChild(editButton);
             res.appendChild(navigateButton);
+            res.appendChild(ratingIntroText);
+            res.appendChild(rating);
+            res.appendChild(starContainer);
 
             mainDiv.append(res);
         }
@@ -121,52 +183,11 @@
             map.setView(marker.getLatLng(), 16);
         }
 
-        const getLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
 
-                    console.log(latitude, longitude);
-
-                    sendLocationToServer(latitude, longitude);
-                }, function () {
-                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.")
-            }
-        };
 
         const resetMap = () => {
             map.setView([41.6086, 21.7453], 9);
-        }
 
-        function sendLocationToServer(latitude, longitude) {
-            let endLat = 41.9983057;
-            let endLon = 21.4254968;
-
-            console.log("Before fetch")
-            fetch('/map/findRoute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `startLat=${latitude}&startLon=${longitude}&endLat=${endLat}&endLon=${endLon}`,
-            }).then(response => {
-
-                console.log("Received response with status: " + response.status);
-
-                if (response.status === 200) {
-                    console.log("Location sent successfully!");
-                } else if (response.status === 302) {
-                    // Handle redirect manually
-                    console.log("Redirecting to: " + response.headers.get("Location"));
-                    window.location.href = response.headers.get("Location");
-                }
-            }).catch(error => {
-                console.error("Error sending location:", error);
-            });
         }
     </script>
 
