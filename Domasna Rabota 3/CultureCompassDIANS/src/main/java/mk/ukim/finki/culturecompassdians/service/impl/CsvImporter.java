@@ -60,7 +60,7 @@ public class CsvImporter implements CSVReaderService {
                     double longitude = Double.parseDouble(parts[2]);
                     String name = parts[3];
                     String category = parts[4];
-                    Node node = new Node(id, name, latitude, longitude, category);
+                    Node node = new Node(id, name, latitude, longitude, category, 1.0);
                     nodeService.saveNode(node);
                 });
         reader.close();

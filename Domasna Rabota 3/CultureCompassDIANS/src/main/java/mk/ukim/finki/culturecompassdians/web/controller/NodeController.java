@@ -91,6 +91,10 @@ public class NodeController {
             newNode.setLongitude(node.getLongitude());
             newNode.setLatitude(node.getLatitude());
             newNode.setCategory(node.getCategory());
+            newNode.setStars(1.0);
+            newNode.setNumStars(1);
+            newNode.setRating(newNode.getRating());
+            newNode.setWikipediaData("");
 
             Node savedNode = this.nodeService.saveNode(newNode);
             model.addAttribute("newNode", savedNode);
@@ -112,6 +116,8 @@ public class NodeController {
         return "master-template";
     }
 
+    // TODO edit the rating
+
     @GetMapping("/edit-form/{id}")
     public String editNodePage(@PathVariable Long id, Model model) {
         if (this.nodeService.findNodeById(id).isPresent()) {
@@ -121,6 +127,17 @@ public class NodeController {
             return "master-template";
         }
         return "redirect:/node/all?error=NodeNotFound";
+    }
+
+    @GetMapping("/updateRating/{id}")
+    public String updateRating(@PathVariable Long id,
+                               @RequestParam String userRating) {
+        Node node = this.nodeService.findNodeById(id).get();
+        node.setStars(node.getStars()+Double.parseDouble(userRating));
+        node.setNumStars(node.getNumStars()+1);
+        nodeService.deleteNodeById(id);
+        nodeService.saveNode(node);
+        return "redirect:/node/all";
     }
 
 //    @PostMapping("/location")
