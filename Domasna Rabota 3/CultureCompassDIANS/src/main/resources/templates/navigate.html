@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mapbox Example</title>
+    <title>Navigation</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
@@ -20,11 +20,9 @@
         let endLon = [(${session.endLon})]
         let endLat = [(${session.endLat})]
 
-        // Set the coordinates for your starting and ending points
         let startLatLng = [startLon, startLat];
         let endLatLng = [endLon, endLat];
 
-        // Create a map centered at the starting point
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -32,15 +30,13 @@
             zoom: 14
         });
 
-        // Add markers for the starting and ending points
         new mapboxgl.Marker().setLngLat(startLatLng).addTo(map);
         new mapboxgl.Marker().setLngLat(endLatLng).addTo(map);
 
-        // Use Mapbox Directions API to get a route
         var directions = new MapboxDirections({
             accessToken: mapboxgl.accessToken,
             unit: 'metric',
-            profile: 'mapbox/driving', // Use 'mapbox/driving' for non-traffic routes
+            profile: 'mapbox/driving',
             alternatives: true,
             geometries: 'geojson',
         });
@@ -49,9 +45,7 @@
         directions.setDestination(endLatLng);
         map.addControl(directions, 'top-left');
 
-        // Optionally, you can listen for the 'route' event to customize the route appearance
         directions.on('route', function (event) {
-            // Access the GeoJSON of the route and customize as needed
             var routeGeoJSON = event.route.geometry;
             map.addSource('route', {
                 'type': 'geojson',
