@@ -1,11 +1,14 @@
 package mk.ukim.finki.culturecompassdians.service;
 
-import mk.ukim.finki.culturecompassdians.model.Role;
 import mk.ukim.finki.culturecompassdians.model.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import mk.ukim.finki.culturecompassdians.model.UserDto;
 
-public interface UserService extends UserDetailsService {
+import java.util.List;
 
-    User register(String username, String password, String repeatPassword, String name, String surname, Role role);
+public interface UserService {
+    void saveUser(UserDto userDto);
 
+    User findUserByUsername(String username);
+
+    List<UserDto> findAllUsers();
 }

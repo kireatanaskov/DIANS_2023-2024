@@ -18,9 +18,5 @@ public class CultureCompassDiansApplication {
         SpringApplication.run(CultureCompassDiansApplication.class, args);
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10);
-    }
 
 }

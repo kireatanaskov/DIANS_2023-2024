@@ -1,12 +1,13 @@
 package mk.ukim.finki.culturecompassdians.config;
 
-import mk.ukim.finki.culturecompassdians.config.CustomUsernamePasswordAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -15,12 +16,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final PasswordEncoder passwordEncoder;
-    private final CustomUsernamePasswordAuthProvider customProvider;
+    private final UserDetailsService userDetailsService;
 
-    public WebSecurityConfig(PasswordEncoder passwordEncoder, CustomUsernamePasswordAuthProvider customProvider) {
-        this.passwordEncoder = passwordEncoder;
-        this.customProvider = customProvider;
+    public WebSecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Bean
+    public static PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 
 
@@ -30,6 +34,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((auth) ->
                         auth.requestMatchers("/").permitAll()
                                 .requestMatchers("/register/**").permitAll()
+                                .requestMatchers("/node/*").permitAll()
                                 .anyRequest().permitAll()
 
                 ).formLogin(
@@ -41,7 +46,7 @@ public class WebSecurityConfig {
                 ).logout(
                         logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                                .logoutSuccessUrl("/node/all")
+                                .logoutSuccessUrl("/login")
                                 .permitAll()
                 );
         return http.build();
@@ -50,6 +55,8 @@ public class WebSecurityConfig {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(customProvider);
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 }
