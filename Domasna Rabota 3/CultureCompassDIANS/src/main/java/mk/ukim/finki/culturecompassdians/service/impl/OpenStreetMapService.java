@@ -54,7 +54,7 @@ public class OpenStreetMapService {
             String category = firstResult.get("type").toString();
 
 
-            return new Node(id, nodeName, latitude, longitude, category);
+            return new Node(id, nodeName, latitude, longitude, category,1.0);
         } else {
             throw new NotFoundException("Node not found for name: " + nodeName);
         }

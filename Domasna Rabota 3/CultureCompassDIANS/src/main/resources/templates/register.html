@@ -27,7 +27,7 @@
   .card-title {
     font-weight: 300;
   }
-  .btn {
+  .btn-primary {
     font-size: 14px;
     margin-top: 20px;
     background-color: #58370c;
@@ -50,48 +50,47 @@
     border-radius: 25px;
   }
 </style>
-<body th:style="'background-image:url(' + @{/images/background.jpg} + '); background-repeat: no-repeat; background-size: cover;'">
+<body th:style="'background-image:url(' + @{/images/background.jpg} + '); background-repeat: no-repeat; background-size: 100% 100%;'">
 
   <div class="global-container">
     <div class="card login-form">
       <div class="card-body">
         <h3 class="card-title text-center"> Sign Up </h3>
+        <div th:if="${param.error}">
+          <div class="alert alert-danger">Invalid Username or Password</div>
+        </div>
+        <div th:if="${param.success}">
+          <div class="alert alert-info">
+            You have successfully registered our app!
+          </div>
+        </div>
+
         <div class="card-text">
-          <form action="/register" method="post">
+
+          <form  method="post"
+                 role="form"
+                 th:action="@{/register/save}">
             <div class="form-group">
               <label for="username"> Enter Username </label>
-              <input type="text" class="form-control form-control-sm" id="username" name="username">
+              <input type="text" class="form-control form-control-sm" id="username" name="username" required>
             </div>
             <div class="form-group">
               <label for="password">Enter Password </label>
-              <input type="password" class="form-control form-control-sm" id="password" name="password">
+              <input type="password" class="form-control form-control-sm" id="password" name="password" required>
             </div>
             <div class="form-group">
               <label for="repeatedPassword">Repeat Password </label>
-              <input type="password" class="form-control form-control-sm" id="repeatedPassword" name="repeatedPassword">
+              <input type="password" class="form-control form-control-sm" id="repeatedPassword" name="repeatedPassword" required>
             </div>
             <div class="form-group">
-              <label for="name"> Enter Name </label>
-              <input type="text" class="form-control form-control-sm" id="name" name="name">
+              <label for="firstName"> Enter Name </label>
+              <input type="text" class="form-control form-control-sm" id="firstName" name="firstName" required>
             </div>
             <div class="form-group">
-              <label for="surname"> Enter Surname </label>
-              <input type="text" class="form-control form-control-sm" id="surname" name="surname">
+              <label for="lastName"> Enter Surname </label>
+              <input type="text" class="form-control form-control-sm" id="lastName" name="lastName" required>
             </div>
-            <!--
-            <div class="form-group">
-              <input name="role" type="radio" id="ROLE_ADMIN" value="ROLE_ADMIN">
-              <label  for="ROLE_ADMIN">ROLE_ADMIN</label>
-            </div>
-            <div class="form-group">
-              <input  name="role" type="radio" id="ROLE_USER" value="ROLE_USER">
-              <label for="ROLE_USER">ROLE_USER</label>
-            </div>
-            -->
-            <th:block th:if="${hasError}">
-              <div th:text="${error}" class="text-danger"></div>
-            </th:block>
-            <button type="submit" class="btn btn-primary btn-block"> Sign up </button>
+            <button class="btn btn-primary btn-block" type="submit">Register</button>
 
             <div class="sign-up">
               Have an account? <a href="/login"> Log in </a>

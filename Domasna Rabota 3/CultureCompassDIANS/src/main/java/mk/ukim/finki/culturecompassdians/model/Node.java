@@ -22,15 +22,26 @@ public class Node implements Serializable {
     private double latitude;
     private double longitude;
     private String category;
+    private double stars;
+    private int numStars=0;
+    private double rating;
 
     @Column(length = 4000)
     private String wikipediaData;
 
-    public Node(Long id, String name, double latitude, double longitude, String category) {
+    public Node(Long id, String name, double latitude, double longitude, String category, double stars) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.category = category;
+        this.stars = stars;
+        this.numStars++;
+        this.rating = getRating();
     }
+
+    public double getRating() {
+        return stars / numStars;
+    }
+
 }
