@@ -1,14 +1,83 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Mapbox Example</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css" />
 </head>
 <body>
-    <p th:text="${session.startLat}"></p>
-    <p th:text="${session.startLon}"></p>
-    <p th:text="${session.endLat}"></p>
-    <p th:text="${session.endLon}"></p>
-    <a href="/node/all" style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Go Back</a>
+<div id="map" style="height: 600px;"></div>
+<a type="button" class="btn btn-primary" href="/node/all">Back</a>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia2lyNGVleiIsImEiOiJjbHFiNXRuaXcyNGVuMmludWVtMjh6NHdwIn0.iUqW8uzHXcGVBNlFNvhwGA';
+
+    function initMap() {
+        let startLon = [(${session.startLon})]
+        let startLat = [(${session.startLat})]
+        let endLon = [(${session.endLon})]
+        let endLat = [(${session.endLat})]
+
+        // Set the coordinates for your starting and ending points
+        let startLatLng = [startLon, startLat];
+        let endLatLng = [endLon, endLat];
+
+        // Create a map centered at the starting point
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: startLatLng,
+            zoom: 14
+        });
+
+        // Add markers for the starting and ending points
+        new mapboxgl.Marker().setLngLat(startLatLng).addTo(map);
+        new mapboxgl.Marker().setLngLat(endLatLng).addTo(map);
+
+        // Use Mapbox Directions API to get a route
+        var directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken,
+            unit: 'metric',
+            profile: 'mapbox/driving', // Use 'mapbox/driving' for non-traffic routes
+            alternatives: true,
+            geometries: 'geojson',
+        });
+
+        directions.setOrigin(startLatLng);
+        directions.setDestination(endLatLng);
+        map.addControl(directions, 'top-left');
+
+        // Optionally, you can listen for the 'route' event to customize the route appearance
+        directions.on('route', function (event) {
+            // Access the GeoJSON of the route and customize as needed
+            var routeGeoJSON = event.route.geometry;
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': routeGeoJSON
+                }
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#888',
+                    'line-width': 8
+                }
+            });
+        });
+    }
+    initMap();
+</script>
 </body>
 </html>
