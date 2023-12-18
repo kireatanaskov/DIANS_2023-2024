@@ -48,11 +48,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/login">Log in</a>
         </li>
-        <li class="nav-item">
-          <th:block
-            sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_USER')"
-          >
-            <a class="nav-link" href="/logout">Log out</a>
+        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_USER'')')}">
+          <th:block>
+            <a class="nav-link" th:href="@{/logout}">Log out</a>
           </th:block>
         </li>
       </ul>

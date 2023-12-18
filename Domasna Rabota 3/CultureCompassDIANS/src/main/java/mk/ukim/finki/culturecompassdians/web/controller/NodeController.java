@@ -2,7 +2,10 @@ package mk.ukim.finki.culturecompassdians.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import mk.ukim.finki.culturecompassdians.model.Node;
+import mk.ukim.finki.culturecompassdians.model.Role;
+import mk.ukim.finki.culturecompassdians.model.User;
 import mk.ukim.finki.culturecompassdians.model.exception.InvalidCoordinatesException;
 import mk.ukim.finki.culturecompassdians.model.exception.InvalidNameForNode;
 import mk.ukim.finki.culturecompassdians.model.exception.NodeAlreadyExistsException;
@@ -35,7 +38,17 @@ public class NodeController {
 
     @GetMapping("/all")
     public String getAllPoints(@RequestParam(required = false) String error,
+                               HttpServletRequest request,
                                Model model) throws JsonProcessingException {
+        User user = (User) request.getSession().getAttribute("user");
+        boolean isAdmin = false, isLogin = false;
+        if (user != null){
+            isAdmin = user.getRole() == Role.ROLE_ADMIN;
+            isLogin = true;
+        }
+
+        System.out.println("isAdmin: " + isAdmin);
+        System.out.println("isLogin: " + isLogin);
         if(error != null && !error.isEmpty()) {
             model.addAttribute("hasError",true);
             model.addAttribute("error",error);
@@ -45,6 +58,8 @@ public class NodeController {
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
         model.addAttribute("categories", nodeService.findAllCategories());
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isLogin", isLogin);
         return "master-template";
     }
 

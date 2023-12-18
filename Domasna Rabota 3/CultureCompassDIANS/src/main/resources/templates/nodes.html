@@ -81,6 +81,8 @@
 
         let userLatitude;
         let userLongitude;
+        let isAdmin = [(${isAdmin})]
+        let isLoggedIn = [(${isLogin})]
 
         function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
             console.log("Before fetch");
@@ -116,7 +118,6 @@
             let paragraph = document.createElement("h3")
             let locations = document.createElement("p")
             let resetMap = document.createElement("button");
-            let editButton = document.createElement("button");
             let navigateButton = document.createElement("button");
             let ratingIntroText = document.createElement("p");
             let rating = document.createElement("p");
@@ -125,8 +126,13 @@
             resetMap.setAttribute("onclick", "resetMap()");
             resetMap.textContent = "Reset Map";
 
-            editButton.setAttribute("onclick", `editNode(${node.id})`);
-            editButton.textContent = "Edit";
+
+            if (isAdmin) {
+                let editButton = document.createElement("button");
+                editButton.setAttribute("onclick", `editNode(${node.id})`);
+                editButton.textContent = "Edit";
+                res.appendChild(editButton);
+            }
 
             navigateButton.setAttribute("onclick", `getLocation(${node.latitude}, ${node.longitude})`);
             navigateButton.textContent = "Navigate";
@@ -142,7 +148,13 @@
             for (let i = 1; i <= 5; i++) {
                 let star = document.createElement("button");
                 star.innerHTML = "&#9733;";
-                star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                //star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                if (isLoggedIn === true) {
+                    star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                } else {
+                    star.style.pointerEvents = "none"; // Disable pointer events for unauthenticated users
+                    star.setAttribute("onclick", "showLoginMessage()");
+                }
                 starContainer.appendChild(star);
             }
 
@@ -157,13 +169,21 @@
             res.appendChild(paragraph);
             res.appendChild(locations);
             res.appendChild(resetMap);
-            res.appendChild(editButton);
             res.appendChild(navigateButton);
             res.appendChild(ratingIntroText);
             res.appendChild(rating);
             res.appendChild(starContainer);
 
+            if (!isLoggedIn) {
+                let loginMessage = document.createElement("p");
+                loginMessage.textContent = "You must be logged in to leave a rating.";
+                res.appendChild(loginMessage);
+            }
+
             mainDiv.append(res);
+        }
+        function showLoginMessage() {
+            alert("You must be logged in to leave a rating.");
         }
 
         const changeColorAndFocus = (marker, markers) => {
@@ -191,7 +211,7 @@
         }
     </script>
 
-    <div class="col mb-3">
+    <div class="col mb-3" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
         <div class="col-sm-2 col-md-2">
             <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
                 Add new node
