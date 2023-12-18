@@ -47,8 +47,6 @@ public class NodeController {
             isLogin = true;
         }
 
-        System.out.println("isAdmin: " + isAdmin);
-        System.out.println("isLogin: " + isLogin);
         if(error != null && !error.isEmpty()) {
             model.addAttribute("hasError",true);
             model.addAttribute("error",error);

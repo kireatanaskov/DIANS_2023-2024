@@ -27,7 +27,7 @@
   .card-title {
     font-weight: 300;
   }
-  .btn {
+  .btn-primary {
     font-size: 14px;
     margin-top: 20px;
     background-color: #58370c;
@@ -56,6 +56,12 @@
     <div class="card login-form">
       <div class="card-body">
         <h3 class="card-title text-center"> Sign In </h3>
+        <div th:if="${param.error}">
+          <div class="alert alert-danger">Invalid Username or Password</div>
+        </div>
+        <div th:if="${param.logout}">
+          <div class="alert alert-success"> You have been logged out.</div>
+        </div>
         <div class="card-text">
           <form action="/login"  method="post">
             <div class="form-group">
