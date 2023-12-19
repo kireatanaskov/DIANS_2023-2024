@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -36,16 +38,22 @@ public class NodeController {
         this.openStreetMapService = openStreetMapService;
     }
 
-    @GetMapping("/all")
-    public String getAllPoints(@RequestParam(required = false) String error,
-                               HttpServletRequest request,
-                               Model model) throws JsonProcessingException {
+    private Boolean [] getUserAuth (HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         boolean isAdmin = false, isLogin = false;
         if (user != null){
             isAdmin = user.getRole() == Role.ROLE_ADMIN;
             isLogin = true;
         }
+        Boolean [] array = {isAdmin, isLogin};
+        return array;
+    }
+
+    @GetMapping("/all")
+    public String getAllPoints(@RequestParam(required = false) String error,
+                               HttpServletRequest request,
+                               Model model) throws JsonProcessingException {
+        Boolean [] array = getUserAuth(request);
 
         if(error != null && !error.isEmpty()) {
             model.addAttribute("hasError",true);
@@ -56,30 +64,38 @@ public class NodeController {
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
         model.addAttribute("categories", nodeService.findAllCategories());
-        model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("isLogin", isLogin);
+        model.addAttribute("isAdmin", array[0]);
+        model.addAttribute("isLogin", array[1]);
         return "master-template";
     }
 
     @GetMapping("/filteredByName")
     public String getByName(@RequestParam String search,
-                               Model model) throws JsonProcessingException {
+                            HttpServletRequest request,
+                            Model model) throws JsonProcessingException {
+        Boolean [] array = getUserAuth(request);
         List<Node> allNodes = nodeService.findByNameContaining(search);
         String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
         model.addAttribute("categories", nodeService.findAllCategories());
+        model.addAttribute("isAdmin", array[0]);
+        model.addAttribute("isLogin", array[1]);
         return "master-template";
     }
 
     @GetMapping("/filteredByCategory")
     public String getByCategory(@RequestParam String category,
-                               Model model) throws JsonProcessingException {
+                                HttpServletRequest request,
+                                Model model) throws JsonProcessingException {
+        Boolean [] array = getUserAuth(request);
         List<Node> allNodes = nodeService.findByCategory(category);
         String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
         model.addAttribute("nodes", nodesFormatted);
         model.addAttribute("bodyContent", "nodes");
         model.addAttribute("categories", nodeService.findAllCategories());
+        model.addAttribute("isAdmin", array[0]);
+        model.addAttribute("isLogin", array[1]);
         return "master-template";
     }
 
@@ -144,12 +160,17 @@ public class NodeController {
 
     @GetMapping("/updateRating/{id}")
     public String updateRating(@PathVariable Long id,
-                               @RequestParam String userRating) {
+                               @RequestParam String userRating,
+                               HttpServletRequest request,
+                               Model model) {
+        Boolean [] array = getUserAuth(request);
         Node node = this.nodeService.findNodeById(id).get();
         node.setStars(node.getStars()+Double.parseDouble(userRating));
         node.setNumStars(node.getNumStars()+1);
         nodeService.deleteNodeById(id);
         nodeService.saveNode(node);
+        model.addAttribute("isAdmin", array[0]);
+        model.addAttribute("isLogin", array[1]);
         return "redirect:/node/all";
     }
 
