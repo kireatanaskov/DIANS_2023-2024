@@ -29,6 +29,9 @@ public class Node implements Serializable {
     @Column(length = 4000)
     private String wikipediaData;
 
+    @Column(length = 4000)
+    private String imageSource = null;
+
     public Node(Long id, String name, double latitude, double longitude, String category, double stars) {
         this.id = id;
         this.name = name;

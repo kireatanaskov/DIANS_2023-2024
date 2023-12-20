@@ -77,4 +77,20 @@ public class CsvImporter implements CSVReaderService {
 
         nodeService.saveAll(nodes);
     }
+
+    public void scrapeImagesForNodes() {
+        List<Node> nodes = nodeService.findAllNodes();
+        String URL = "https://www.bing.com/images/search?q=";
+
+
+        nodes.forEach(node -> {
+            String title = node.getName();
+            String category = node.getCategory();
+            String searchURL = URL.concat(title + "+" + category + "+mk");
+            String imgSource = OpenStreetMapScraper.getImageLink(searchURL); // HERE
+            node.setImageSource(imgSource);
+        });
+
+        nodeService.saveAll(nodes);
+    }
 }

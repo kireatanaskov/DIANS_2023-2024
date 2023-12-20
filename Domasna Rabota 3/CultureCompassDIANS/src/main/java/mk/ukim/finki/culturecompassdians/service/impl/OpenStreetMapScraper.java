@@ -3,6 +3,7 @@ package mk.ukim.finki.culturecompassdians.service.impl;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class OpenStreetMapScraper {
     }
 
     public static String getFirstParagraph(String WIKI_URL) {
-        if(WIKI_URL == null || WIKI_URL.isEmpty() || WIKI_URL.equals("Wikipedia link not found")) {
+        if (WIKI_URL == null || WIKI_URL.isEmpty() || WIKI_URL.equals("Wikipedia link not found")) {
             return "";
         }
 
@@ -34,4 +35,16 @@ public class OpenStreetMapScraper {
             return e.getMessage();
         }
     }
+
+    public static String getImageLink(String URL) {
+        try {
+            Document document = Jsoup.connect(URL).get();
+            // Get div that has an image from result of search, child() for the <img>, return src
+            Element element = document.selectFirst(".img_cont").child(0);
+            return element.attr("src");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

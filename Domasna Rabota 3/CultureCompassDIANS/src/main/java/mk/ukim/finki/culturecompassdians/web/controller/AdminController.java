@@ -39,6 +39,8 @@ public class AdminController {
                 System.out.println(e.getMessage());
             }
             csvReaderService.updateNodes();
+//            csvReaderService.scrapeImagesForNodes();
+
             model.addAttribute("message", "Currently reading from CSV, and WebScraping");
         }
         model.addAttribute("bodyContent", "admin-page");
