@@ -22,6 +22,7 @@ public class AdminController {
         this.csvReaderService = csvReaderService;
     }
 
+   // @Secured("ROLE_ADMIN")
     @GetMapping("/panel")
     public String adminPanel(Model model) {
         model.addAttribute("bodyContent", "admin-page");
