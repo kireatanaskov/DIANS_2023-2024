@@ -2,7 +2,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/nodesCSS.css">
-
+  
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <div class="sidebar">
@@ -60,24 +60,24 @@
           <hr>
           <div id="controls"></div>
           <hr>
-          <div class="row" id="category">
+          <div class="row content-align d-flex align-items-center justify-content-center flex-wrap" id="category">
             <div class="col-md-8">
-              <form method="GET" action="/node/filteredByCategory">
-                <label for="dropdown">Choose a category to filter the nodes:</label>
-                <select
-                        class="form-control form-control-sm custom-dropdown"
-                        name="category"
-                        id="dropdown">
-                  <option th:each="category : ${categories}">
-                    <th:block
-                            th:value="${category}"
-                            th:text="${category}"
-                    ></th:block>
-                  </option>
-                </select>
-                <input type="submit" />
-              </form>
+              <div class="text-center">
+                <div class="mb-2">
+                  <label>Choose a category to filter the nodes:</label>
+                </div>
+                <div class="mb-2">
+                  <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()">all</button>
+                </div>
 
+                <form method="GET" action="/node/filteredByCategory" class="d-flex flex-wrap">
+                  <th:block th:each="category : ${categories}">
+                    <div class="mb-2">
+                      <button class="btn btn-sm btn-secondary button-style" name="category" type="submit" th:text="${category}" th:value="${category}"></button>
+                    </div>
+                  </th:block>
+                </form>
+              </div>
             </div>
           </div>
           <br>
