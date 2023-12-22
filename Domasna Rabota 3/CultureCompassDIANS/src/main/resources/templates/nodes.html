@@ -1,172 +1,7 @@
 <div xmlns:th="http://www.thymeleaf.org" class="main-div">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
-
-  <style>
-
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
-      background-color: #11183e;
-      /*align-items: center;*/
-      justify-content: center;
-    }
-    .sidebar{
-      height: 100vh;
-      min-height: 500px;
-      width: 50px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: #11183e;
-      overflow: hidden;
-      transition: width 0.2s;
-    }
-
-    .sidebar:hover ~ .map-container {
-      left: 62px;
-      width: calc(100% - 200px);
-    }
-
-    .sidebar:hover{
-      width: 200px;
-      overflow: visible;
-      z-index: 2;
-    }
-
-    nav{
-      margin-top: 20px;
-      height: 80vh;
-      min-height: 300px;
-    }
-
-
-    ul{
-      margin-left: -15px;
-      list-style-type: none;
-      height: 100%;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-    }
-
-    li a{
-      margin-left: -15px;
-      text-decoration: none;
-      width: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 2px 0;
-      font-family: 'Poppins', sans-serif;
-      color: #cacaca;
-    }
-
-    li a:hover{
-      text-decoration: none;
-      background-image: linear-gradient(
-              to right,
-              #2a88e6 7px,
-              rgba(255,255,255,0.1) 7px
-      );
-      color: #ffffff;
-    }
-
-    i.fas{
-      padding-left: 10px;
-      font-size: 20px;
-      text-align: right;
-    }
-
-    .fas fa-search{
-      font-size: 20px;
-    }
-
-    .sidebar .search-box{
-      margin-left: -10px;
-      background-color: #11183e;
-      text-decoration: none;
-      width: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 2px 0;
-      font-family: 'Poppins', sans-serif;
-      color: #cacaca;
-    }
-
-    .search-box input{
-      padding: 5px;
-      color: white;
-      margin-left: 20px;
-      background: #11183e;
-      margin-right: 20px;
-      height: 100%;
-      width: 100%;
-      outline: none;
-      border: 1px solid antiquewhite;
-    }
-
-    li p{
-      padding-left: 30px;
-      width: 135px;
-      font-size: 16px;
-      text-align: left;
-      letter-spacing: 0.3px;
-    }
-
-    .map-container {
-      float: right;
-      margin-right: 10px;
-      border: 1px solid white;
-      border-radius: 20px;
-      background-color: white;
-      width: 95vw;
-      height: 95vh;
-    }
-
-    .map{
-      height: 95vh;
-      margin-top:10px;
-
-    }
-
-    .inner-div {
-      flex:1;
-    }
-
-    .custom-dropdown {
-      width: 200px;
-    }
-
-    #map {
-      height: 97%;
-      padding: 0;
-      border: 1px solid white;
-      border-radius: 20px;
-    }
-
-    .button-style {
-      padding: 7px;
-      margin: 5px;
-      border: 1px solid #d2a16a;
-      background-color: #d2a16a;
-      color: #fff;
-      text-align: center;
-      text-decoration: none;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
-
-    .button-style:hover {
-      background-color: #b1834e;
-    }
-  </style>
+  <link rel="stylesheet" href="/nodesCSS.css">
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -174,7 +9,7 @@
     <nav>
       <ul>
         <li>
-          <a href="/home">
+          <a href="/node/all">
             <i class="fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -197,6 +32,12 @@
             <input type="search" name="search" placeholder="Search..">
           </form>
         </li>
+        <li>
+          <a href="">
+            <i class="far fa-user-circle"></i>
+            <p>Hi <span>name</span></p>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
@@ -208,7 +49,7 @@
           <div id="additional-info"></div>
           <div class="row">
             <div class="col" id="starter">
-              <h4>Additional Information</h4>
+              <h4 id="additional_info">Additional Information</h4>
               <hr />
               <p id="info-content">
                 Please select a location to display additional information.
@@ -236,13 +77,14 @@
                 </select>
                 <input type="submit" />
               </form>
+
             </div>
           </div>
           <br>
           <hr>
           <div class="col-sm-3 col-md-7"
                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-            <div>
+            <div id="addNewNode">
               <a
                       href="/node/add-form"
                       class="btn btn-block btn-dark add-product-btn">
@@ -367,13 +209,14 @@
     const displayInfo = (node) => {
       $("#additional-info").empty();  // Clear previous node data
       $("#starter").remove();
-      //$("#category").remove();
+      $("#category").remove();
+      $("#addNewNode").remove();
       let mainDiv = $("#additional-info")
       let controls = $("#controls");
       controls.empty();
 
       let res = $("<div>").addClass("container");
-      let title = $("<h2>").text(`${node.name}`);
+      let title = $("<h2>").text(`${node.name}`).addClass("title");
       let paragraph = $("<div>")
       let locations = $("<p>").append(`📍 ${node.latitude}, ${node.longitude}`);
       let resetMapButton = createButton("Reset Map", resetMap, "btn btn-sm btn-secondary");
@@ -385,17 +228,19 @@
       let starContainer = $("<div>");
 
       if (node.wikipediaData) {
-        paragraph.append(`<hr>${node.wikipediaData}`);
+        paragraph.append(`<hr>${node.wikipediaData}`).addClass("paragraph").addClass("text-justify");
       }
 
       for (let i = 1; i <= 5; i++) {
         let star = document.createElement("button");
         star.innerHTML = "&#9733;";
+        star.classList.add("star");
+
         if (isLoggedIn === true) {
           star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
         } else {
           star.style.pointerEvents = "none";
-          star.setAttribute("onclick", "showLoginMessage()");
+          star.classList.add("disabled");
         }
         starContainer.append(star);
       }
@@ -404,8 +249,8 @@
       controls.append(resetMapButton, navigateButton, ratingIntroText, rating, starContainer);
 
       if (!isLoggedIn) {
-        const loginMessage = $("<p>").text("You must be logged in to leave a rating.");
-        res.append(loginMessage);
+        const loginMessage = $("<p>").text("You must be logged in to leave a rating.").addClass("starText");
+        controls.append(loginMessage);
       }
 
       if (isAdmin) {
@@ -415,10 +260,6 @@
       }
 
       mainDiv.append(res);
-    }
-
-    function showLoginMessage() {
-      alert("You must be logged in to leave a rating.");
     }
 
     const changeColorAndFocus = (marker, markers) => {
