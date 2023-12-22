@@ -1,4 +1,4 @@
-<div xmlns:th="http://www.thymeleaf.org" class="main-div">
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" class="main-div">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/nodesCSS.css">
@@ -14,13 +14,13 @@
             <p>Home</p>
           </a>
         </li>
-        <li>
+        <li sec:authorize="isAnonymous()">
           <a href="/login">
             <i class="fas fa-sign-in-alt"></i>
             <p>Log In</p>
           </a>
         </li>
-        <li>
+        <li sec:authorize="isAuthenticated()">
           <a href="/logout">
             <i class="fas fa-sign-out-alt"></i>
             <p>Log Out</p>
@@ -33,9 +33,14 @@
           </form>
         </li>
         <li>
-          <a href="">
+          <a href="#">
             <i class="far fa-user-circle"></i>
-            <p>Hi <span>name</span></p>
+            <p sec:authorize="isAuthenticated()">
+              Hello, <span sec:authentication="name"></span>!
+            </p>
+            <p sec:authorize="!isAuthenticated()">
+              Welcome, Guest!
+            </p>
           </a>
         </li>
       </ul>

@@ -12,6 +12,7 @@ import mk.ukim.finki.culturecompassdians.model.exception.NodeAlreadyExistsExcept
 import mk.ukim.finki.culturecompassdians.model.exception.NotFoundException;
 import mk.ukim.finki.culturecompassdians.service.NodeService;
 import mk.ukim.finki.culturecompassdians.service.impl.OpenStreetMapService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -112,6 +113,7 @@ public class NodeController {
 //    }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String saveNode(@ModelAttribute Node newNode, Model model) {
         try {
             Node node = openStreetMapService.getNodeInfo(newNode.getName());
@@ -139,6 +141,7 @@ public class NodeController {
     }
 
     @GetMapping("/add-form")
+    @PreAuthorize("hasRole('ADMIN')")
     public String addNodePage(Model model) {
         model.addAttribute("newNode", new Node());
         model.addAttribute("bodyContent","add-page");
@@ -148,6 +151,7 @@ public class NodeController {
     // TODO edit the rating
 
     @GetMapping("/edit-form/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editNodePage(@PathVariable Long id, Model model) {
         if (this.nodeService.findNodeById(id).isPresent()) {
             Node node = this.nodeService.findNodeById(id).get();
@@ -173,6 +177,12 @@ public class NodeController {
         model.addAttribute("isLogin", array[1]);
         return "redirect:/node/all";
     }
+
+    @GetMapping("/access_denied")
+    public String getAccessDeniedPage() {
+        return "access_denied";
+    }
+
 
 //    @PostMapping("/location")
 //    @ResponseBody
