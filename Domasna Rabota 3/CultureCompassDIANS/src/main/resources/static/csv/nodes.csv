@@ -16,7 +16,6 @@ id,latitude,longitude,name,category
 1866944575,41.9983057,21.4254968,Св. Климент Охридски,memorial
 1867151652,41.9993163,21.4371620,Скендербег,memorial
 1879436069,42.1706665,21.8098380,Костоперска Карпа,archaeological_site
-1902385557,42.0516892,20.7001933,Varrezat e Radeshës,memorial
 2026975410,41.2775784,22.4937679,Isar / Idomenae,archaeological_site
 2138788013,41.4293251,21.7629669,Ножот,memorial
 2316156278,41.0246150,21.3368929,Стефан Наумов-Стив,memorial
@@ -43,8 +42,6 @@ id,latitude,longitude,name,category
 4409589398,41.8370625,20.8837497,џа́мија,place_of_worship
 4411126494,41.0302025,21.3347596,Статуа Филип II,statue
 4440746389,41.9930933,21.4298952,Wall Street Bull,statue
-4679023257,42.1594768,21.2890417,Lokalitet arkeologjik në Paldenicë,archaeological_site
-4692355519,42.0620592,20.6541650,Shtatorja e Adem Jasharit,memorial
 4745413067,41.2788101,20.7836677,Ботун,memorial
 5327471601,41.0067740,21.3415263,Св. Троица,memorial
 5541143272,41.8845661,22.5039935,Теракота,memorial
@@ -112,10 +109,8 @@ id,latitude,longitude,name,category
 9200216569,42.0043082,21.4185013,Dane kraptzew,memorial
 9269907745,41.9918182,21.4296159,Атентат на Киро Глигоров,memorial
 10006874002,42.0001506,22.1778987,Јаким Д Стојковски,memorial
-10038199740,40.9081810,20.6461319,Kalaja e Pogradecit,archaeological_site
 10204019571,41.1757975,20.6778798,Нико Нестор-Дживджан,memorial
 10204019572,41.1756353,20.6791018,Дрини дент,memorial
-10292218134,41.0659830,20.6447795,Mozaiku i Linit,archaeological_site
 10294842358,41.5942721,20.6527486,Georgi Pulevski,statue
 10913747003,41.9961595,21.4328538,Denkmal Neєat Agoli,statue
 10913747004,41.9961265,21.4309955,Dimitrija-Chupovski-Denkmal,statue
