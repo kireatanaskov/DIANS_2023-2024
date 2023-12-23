@@ -233,9 +233,20 @@ li p{
 }
 
 .side-menu-texts {
-    margin: 0;
+    margin: 0 5px 0 0;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+i.fa-globe-europe,
+i.fa-landmark,
+i.fa-place-of-worship,
+i.fa-monument,
+i.fa-user,
+i.fa-archway,
+i.fa-tree-city
+{
+    padding: 0 5px;
 }
 
 

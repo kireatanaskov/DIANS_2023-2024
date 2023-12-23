@@ -28,8 +28,10 @@
         </li>
         <li class="search-box">
           <i class="fas fa-search"></i>
-          <form method="GET" action="/node/filteredByName" style="display: flex">
-            <input type="search" name="search" placeholder="Search..">
+          <form class="side-menu-texts" method="GET" action="/node/filteredByName" style="display: flex">
+            <input class="form-control mr-sm-2 rounded-pill"
+                   type="search" name="search" placeholder=" Search.."
+                   onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)">
           </form>
         </li>
         <li>
@@ -70,18 +72,49 @@
                         <div class="col-md-8">
                             <div class="text-center">
                                 <div class="mb-2">
-                                    <label>Choose a category to filter the nodes:</label>
-                                </div>
+                                    <label>Choose a category to filter the nodes:</label></div>
                                 <div class="mb-2">
-                                    <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()">all
+                                    <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()"
+                                            data-toggle="tooltip" data-placement="top" title="All">
+                                        <i class="fas fa-globe-europe"></i>
                                     </button>
                                 </div>
 
                                 <form method="GET" action="/node/filteredByCategory" class="d-flex flex-wrap">
                                     <th:block th:each="category : ${categories}">
                                         <div class="mb-2">
-                                            <button class="btn btn-sm btn-secondary button-style" name="category"
-                                                    type="submit" th:text="${category}" th:value="${category}"></button>
+                                            <button th:if="${category} == 'archaeological_site'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Archaeological site"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-landmark"></i>
+                                            </button>
+                                            <button th:if="${category} == 'place_of_worship'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Place of worship"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-place-of-worship"></i>
+                                            </button>
+                                            <button th:if="${category} == 'monument'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Monument"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-archway"></i>
+                                            </button>
+                                            <button th:if="${category} == 'memorial'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Memorial"
+                                                    type="submit" th:value="${category}">
+<!--                                                vidi edno od ovie samo ova mi javuvashe problem ne sakaseh da se stavi-->
+                                                <i class="fas fa-landmark-dome"></i>
+<!--                                                <i class="fas fa-house-flag"></i>-->
+                                            </button>
+                                            <button th:if="${category} == 'statue'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Statue"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-monument"></i>
+                                            </button>
                                         </div>
                                     </th:block>
                                 </form>
@@ -328,6 +361,14 @@
             $("#controls").empty();
 
             window.location.href = '/node/all';
+        }
+
+        function clearPlaceholder(input) {
+            input.placeholder = '';
+        }
+
+        function restorePlaceholder(input) {
+            input.placeholder = '  Search..';
         }
 
 
