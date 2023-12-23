@@ -41,6 +41,7 @@ public class RegistrationController {
 
         if(result.hasErrors()){
             model.addAttribute("user", userDto);
+            model.addAttribute("error", result);
             model.addAttribute("bodyContent", "register");
             return "master-template";
         }

@@ -1,38 +1,170 @@
-<div xmlns:th="http://www.thymeleaf.org">
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" class="main-div">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/nodesCSS.css">
+  
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-    <style>
-        .custom-dropdown {
-            width: 200px;
-        }
-    </style>
+  <div class="sidebar">
+    <nav>
+      <ul>
+        <li>
+          <a href="/node/all">
+            <i class="fas fa-home"></i>
+            <p class="side-menu-texts">Home</p>
+          </a>
+        </li>
+        <li sec:authorize="isAnonymous()">
+          <a href="/login">
+            <i class="fas fa-sign-in-alt"></i>
+            <p class="side-menu-texts">Log In</p>
+          </a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <p class="side-menu-texts">Log Out</p>
+          </a>
+        </li>
+        <li class="search-box">
+          <i class="fas fa-search"></i>
+          <form class="side-menu-texts" method="GET" action="/node/filteredByName" style="display: flex">
+            <input class="form-control mr-sm-2 rounded-pill"
+                   type="search" name="search" placeholder=" Search.."
+                   onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)">
+          </form>
+        </li>
+        <li>
+          <a href="#">
+            <i class="far fa-user-circle"></i>
+            <p class="side-menu-texts" sec:authorize="isAuthenticated()">
+              Hello, <span sec:authentication="name"></span>!
+            </p>
+            <p class="side-menu-texts" sec:authorize="!isAuthenticated()">
+              Welcome, Guest!
+            </p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 
+    <div class="map-container">
+        <div class="container-fluid inner-div">
+            <div class="row" style="margin: 0">
+                <div class="col-4" style="padding: 0">
+                    <div id="additional-info"></div>
+                    <div class="row">
+                        <div class="col" id="starter">
+                            <h4 id="additional_info">Additional Information</h4>
+                            <hr/>
+                            <p id="info-content">
+                                Please select a location to display additional information.
+                            </p>
+                        </div>
+                    </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+                    <hr>
+                    <div id="controls"></div>
 
-    <div class="row" style="margin: 0;">
-        <div class="col-4" style="padding: 0;">
-            <div id="additional-info"></div>
+                    <div class="row content-align d-flex align-items-center justify-content-center flex-wrap"
+                         id="category">
+                        <div class="col-md-8">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <label>Choose a category to filter the nodes:</label></div>
+                                <div class="mb-2">
+                                    <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()"
+                                            data-toggle="tooltip" data-placement="top" title="All">
+                                        <i class="fas fa-globe-europe"></i>
+                                    </button>
+                                </div>
+
+                                <form method="GET" action="/node/filteredByCategory" class="d-flex flex-wrap">
+                                    <th:block th:each="category : ${categories}">
+                                        <div class="mb-2">
+                                            <button th:if="${category} == 'archaeological_site'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Archaeological site"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-landmark"></i>
+                                            </button>
+                                            <button th:if="${category} == 'place_of_worship'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Place of worship"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-place-of-worship"></i>
+                                            </button>
+                                            <button th:if="${category} == 'monument'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Monument"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-archway"></i>
+                                            </button>
+                                            <button th:if="${category} == 'memorial'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Memorial"
+                                                    type="submit" th:value="${category}">
+<!--                                                vidi edno od ovie samo ova mi javuvashe problem ne sakaseh da se stavi-->
+                                                <i class="fas fa-landmark-dome"></i>
+<!--                                                <i class="fas fa-house-flag"></i>-->
+                                            </button>
+                                            <button th:if="${category} == 'statue'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" title="Statue"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-monument"></i>
+                                            </button>
+                                        </div>
+                                    </th:block>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="col-sm-3 col-md-7"
+                         th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                        <div id="addNewNode">
+                            <a
+                                    href="/node/add-form"
+                                    class="btn btn-block btn-dark add-product-btn">
+                                Add new node
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-8">
+                    <div class="map">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="col-8" style="padding: 0;">
-            <div id="map" style="height: 600px"></div>
-        </div>
-    </div>
-
-    <div>
-        <form method="GET" action="/node/filteredByCategory">
-            <label for="dropdown">Choose a category:</label>
-            <select class="form-control form-control-sm custom-dropdown" name="category" id="dropdown">
-                <option th:each="category : ${categories}">
-                    <th:block th:value="${category}" th:text="${category}"></th:block>
-                </option>
-            </select>
-            <input type="submit">
-        </form>
     </div>
 
     <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var searchForm = document.getElementById("searchForm");
+
+            searchForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                performSearch();
+            });
+
+            function performSearch() {
+                var searchTerm = searchForm.querySelector('input[name="search"]').value;
+                window.location.href = "/node/filteredByName?search=" + encodeURIComponent(searchTerm);
+            }
+
+            searchForm.querySelector('input[name="search"]').addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    performSearch();
+                }
+            });
+        });
+
         let nodes = [(${nodes})];
         let map = L.map("map")
             .setView([41.6086, 21.7453], 9); // Skopje
@@ -60,6 +192,7 @@
         function editNode(nodeId) {
             window.location.href = '/node/edit-form/' + nodeId;
         }
+
         // Getting location
         function getLocation(nodeLatitude, nodeLongitude) {
             // Get the location from the user
@@ -88,7 +221,7 @@
             console.log("Before fetch");
             fetch('/map/findRoute', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
+                headers: {'Content-Type': 'application/x-www-form-urlencoded',},
                 body: `startLat=${userLatitude}&startLon=${userLongitude}&endLat=${nodeLatitude}&endLon=${nodeLongitude}`,
             }).then(response => {
                 console.log("Received response with status: " + response.status); // For kind of debugging purposes
@@ -109,81 +242,95 @@
             window.location.href = '/node/updateRating/' + nodeId + '?userRating=' + ratingValue;
         }
 
+        function focusOnNode(node) {
+            let marker = L.marker([node.latitude, node.longitude])
+
+            marker.on('click', function (e) {
+                displayInfo(node);
+                changeColorAndFocus(marker, markers);
+            });
+
+            markers.push(marker);
+        }
+
+        function createButton(text, onClick, cssClass) {
+            return $("<button>").text(text).on("click", onClick).addClass("button-style");
+        }
+
         const displayInfo = (node) => {
             $("#additional-info").empty();  // Clear previous node data
-
+            $("#starter").remove();
+            $("#category").remove();
+            $("#addNewNode").remove();
             let mainDiv = $("#additional-info")
+            let controls = $("#controls");
+            controls.empty();
 
-            let res = document.createElement("div");
-            let paragraph = document.createElement("h3")
-            let locations = document.createElement("p")
-            let resetMap = document.createElement("button");
-            let navigateButton = document.createElement("button");
-            let ratingIntroText = document.createElement("p");
-            let rating = document.createElement("p");
-            let starContainer = document.createElement("div");
+            let res = $("<div>").addClass("container");
+            let title = $("<h2>").text(`${node.name}`).addClass("title");
+            let paragraph = $("<div>")
+            let locations = $("<p>").append(`📍 ${node.latitude}, ${node.longitude}`);
+            let resetMapButton = createButton("Reset Map", resetMap, "btn btn-sm btn-secondary");
+            let navigateButton = createButton("Navigate", () => getLocation(node.latitude, node.longitude), "btn btn-sm btn-primary");
+            let ratingIntroText = $("<p>").text("Current rating:").addClass("controls-elements")
+                .css({paddingTop: "10px", marginBottom: "0px"});
 
-            resetMap.setAttribute("onclick", "resetMap()");
-            resetMap.textContent = "Reset Map";
+            let rating = $("<p>").text(node.rating.toFixed(2)).addClass("controls-elements");
+            let starContainer = $("<div>").addClass("controls-elements");
 
-
-            if (isAdmin) {
-                let editButton = document.createElement("button");
-                editButton.setAttribute("onclick", `editNode(${node.id})`);
-                editButton.textContent = "Edit";
-                res.appendChild(editButton);
-            }
-
-            navigateButton.setAttribute("onclick", `getLocation(${node.latitude}, ${node.longitude})`);
-            navigateButton.textContent = "Navigate";
-
-            let node_explanation = []
-            node_explanation.push("Information about: ");
-            node_explanation.push(node.name);
-            console.log(node.wikipediaData);
             if (node.wikipediaData) {
-                node_explanation.push("Additional wiki data: ", node.wikipediaData);
+                paragraph.append(`<hr>${node.wikipediaData}`).addClass("paragraph").addClass("text-justify");
             }
 
+            let starsArray = []
             for (let i = 1; i <= 5; i++) {
                 let star = document.createElement("button");
                 star.innerHTML = "&#9733;";
-                //star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
-                if (isLoggedIn === true) {
-                    star.setAttribute("onclick", `rateNode(${i}, ${node.id})`);
-                } else {
-                    star.style.pointerEvents = "none"; // Disable pointer events for unauthenticated users
-                    star.setAttribute("onclick", "showLoginMessage()");
+                star.classList.add("star", "rounded");
+
+                if (isLoggedIn !== true) {
+                  star.style.pointerEvents = "none";
+                  star.classList.add("disabled");
                 }
-                starContainer.appendChild(star);
+                starsArray.push(star);
+                starContainer.append(star);
+            }
+            console.log(starsArray);
+
+            for (let i = 1; i <= 5; i++) {
+              if(isLoggedIn === true) {
+                starsArray[i - 1].setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                starsArray[i - 1].addEventListener("mouseover", function () {
+                  for (let j = 1; j <= i; j++) {
+                    starsArray[j - 1].classList.add(`hover-${j}`);
+                    console.log(j, i)
+                  }
+                });
+
+                starsArray[i - 1].addEventListener("mouseout", function () {
+                  for (let j = 1; j <= 5; j++) {
+                    starsArray[j - 1].classList.remove(`hover-${j}`);
+                  }
+                });
+              }
             }
 
-            paragraph.textContent = node_explanation.join("");
-            locations.textContent = `${node.latitude}, ${node.longitude}`;
-            ratingIntroText.textContent = `Current rating:`;
-            ratingIntroText.style.paddingTop = "10px";
-            ratingIntroText.style.marginBottom = "0px";
-            rating.textContent = `${node.rating.toFixed(2)}`;
 
-            res.setAttribute("class", "container");
-            res.appendChild(paragraph);
-            res.appendChild(locations);
-            res.appendChild(resetMap);
-            res.appendChild(navigateButton);
-            res.appendChild(ratingIntroText);
-            res.appendChild(rating);
-            res.appendChild(starContainer);
+                res.append(title, paragraph, locations);
+            controls.append(resetMapButton, navigateButton, ratingIntroText, rating, starContainer);
 
             if (!isLoggedIn) {
-                let loginMessage = document.createElement("p");
-                loginMessage.textContent = "You must be logged in to leave a rating.";
-                res.appendChild(loginMessage);
+                const loginMessage = $("<p>").text("You must be logged in to leave a rating.").addClass("starText").css({marginLeft: "5px"});
+                controls.append(loginMessage);
+            }
+
+            if (isAdmin) {
+                //const editButton = $("<button>").text("Edit").on("click", () => editNode(node.id));
+                const editButton = createButton("Edit", () => editNode(node.id), "btn btn-sm btn-info");
+                res.append(editButton);
             }
 
             mainDiv.append(res);
-        }
-        function showLoginMessage() {
-            alert("You must be logged in to leave a rating.");
         }
 
         const changeColorAndFocus = (marker, markers) => {
@@ -203,21 +350,34 @@
             map.setView(marker.getLatLng(), 16);
         }
 
-
-
         const resetMap = () => {
             map.setView([41.6086, 21.7453], 9);
 
-        }
-    </script>
+            markers.forEach((marker) => {
+                marker.setIcon(new L.Icon.Default());
+            });
 
-    <div class="col mb-3" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-        <div class="col-sm-2 col-md-2">
-            <a href="/node/add-form" class="btn btn-block btn-dark add-product-btn">
-                Add new node
-            </a>
-        </div>
-    </div>
-</div>
-</div>
+            $("#additional-info").empty();
+            $("#controls").empty();
+
+            window.location.href = '/node/all';
+        }
+
+        function clearPlaceholder(input) {
+            input.placeholder = '';
+        }
+
+        function restorePlaceholder(input) {
+            input.placeholder = '  Search..';
+        }
+
+
+        // let ratedNode = [(${ratedNode})] !== null ? [(${ratedNode})] : "";
+        //
+        // /*
+        //
+        // if (ratedNode !== null) {
+        //   focusOnNode(ratedNode);
+        // }*/
+    </script>
 </div>

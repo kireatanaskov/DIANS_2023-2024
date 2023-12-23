@@ -22,6 +22,7 @@ public class AdminController {
         this.csvReaderService = csvReaderService;
     }
 
+   // @Secured("ROLE_ADMIN")
     @GetMapping("/panel")
     public String adminPanel(Model model) {
         model.addAttribute("bodyContent", "admin-page");
@@ -39,6 +40,8 @@ public class AdminController {
                 System.out.println(e.getMessage());
             }
             csvReaderService.updateNodes();
+//            csvReaderService.scrapeImagesForNodes();
+
             model.addAttribute("message", "Currently reading from CSV, and WebScraping");
         }
         model.addAttribute("bodyContent", "admin-page");

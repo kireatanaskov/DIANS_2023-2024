@@ -9,4 +9,6 @@ public interface CSVReaderService {
     void saveNodes() throws IOException;
 
     void updateNodes();
+
+    void scrapeImagesForNodes();
 }
