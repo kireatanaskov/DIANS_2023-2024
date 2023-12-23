@@ -11,8 +11,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
-
-COPY --from=build /app/Domasna\ Rabota\ 3/CultureCompassDIANS/target/demo-0.0.1-SNAPSHOT.jar CultureCompassDIANS.jar
+COPY --from=build /app/CultureCompassDIANS/target/demo-0.0.1-SNAPSHOT.jar CultureCompassDIANS.jar
 
 EXPOSE 8080
 
