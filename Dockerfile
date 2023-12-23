@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Change to the directory of the specific project
-WORKDIR /app/Domasna\ Rabota\ 3
+WORKDIR /app/Domasna Rabota 3/CultureCompassDIANS
 
 # Build the project and package the JAR file
 RUN mvn clean package -DskipTests
@@ -20,7 +20,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the build stage to the new stage
-COPY --from=build /app/Domasna\ Rabota\ 3/target/demo-0.0.1-SNAPSHOT.jar CultureCompassDIANS.jar
+COPY --from=build /app/Domasna\ Rabota\ 3/CultureCompassDIANS/target/demo-0.0.1-SNAPSHOT.jar CultureCompassDIANS.jar
 
 # Expose the port the app runs on
 EXPOSE 8080
