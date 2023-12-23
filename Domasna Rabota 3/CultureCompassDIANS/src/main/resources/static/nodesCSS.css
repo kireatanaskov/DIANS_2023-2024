@@ -157,8 +157,8 @@ li p{
 .button-style {
     padding: 7px;
     margin: 5px;
-    border: 1px solid #d2a16a;
-    background-color: #d2a16a;
+    border: 1px solid #b1834e;
+    background-color: #b1834e;
     color: #fff;
     text-align: center;
     text-decoration: none;
@@ -169,7 +169,8 @@ li p{
 }
 
 .button-style:hover {
-    background-color: #b1834e;
+    border: 1px solid #b1834e;
+    background-color: #d2a16a;
 }
 
 #info-content{
@@ -187,18 +188,54 @@ li p{
 
 .star {
     border: none;
-    color: #d2a220;
+    font-size: 17px;
+    color: #797979;
     cursor: pointer;
     margin: 3px;
 }
 
-.star:hover{
-    color: #a18010;
+.star:hover,
+.star:hover ~ {
+    color: #c9a959;
+}
+
+.star.hover-1 {
+    color: #deb12a;
+}
+
+.star.hover-2 {
+    color: #deb12a;
+}
+
+.star.hover-3 {
+    color: #deb12a;
+}
+
+.star.hover-4 {
+    color: #deb12a;
+}
+
+.star.hover-5 {
+    color: #deb12a;
 }
 
 .star.disabled {
     color: #ccc;
     cursor: not-allowed;
+}
+
+#controls {
+    padding: 0 15px;
+}
+
+.controls-elements {
+    padding-left: 5px;
+}
+
+.side-menu-texts {
+    margin: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 

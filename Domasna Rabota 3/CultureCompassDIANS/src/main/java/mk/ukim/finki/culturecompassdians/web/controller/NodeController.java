@@ -52,6 +52,7 @@ public class NodeController {
 
     @GetMapping("/all")
     public String getAllPoints(@RequestParam(required = false) String error,
+//                               @RequestParam(required = false) String ratingUpdate,
                                HttpServletRequest request,
                                Model model) throws JsonProcessingException {
         Boolean [] array = getUserAuth(request);
@@ -60,6 +61,9 @@ public class NodeController {
             model.addAttribute("hasError",true);
             model.addAttribute("error",error);
         }
+//        if (ratingUpdate != null) {
+//            model.addAttribute("ratedNode", this.nodeService.findNodeById(Long.parseLong(ratingUpdate)).get());
+//        }
         List<Node> allNodes = nodeService.findAllNodes();
         String nodesFormatted = new ObjectMapper().writeValueAsString(allNodes);
         model.addAttribute("nodes", nodesFormatted);
