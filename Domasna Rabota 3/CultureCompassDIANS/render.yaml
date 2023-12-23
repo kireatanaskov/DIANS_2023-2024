@@ -1,0 +1,8 @@
+services:
+  - name: your-project
+    type: web
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar "Domasna Rabota 3/target/demo-0.0.1-SNAPSHOT.jar"
+    env:
+      - key: PORT
+        value: 8080
