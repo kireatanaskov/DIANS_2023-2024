@@ -5,8 +5,11 @@ FROM maven:3.8.3-openjdk-17 AS build
 WORKDIR /app
 
 # Copy only the relevant project files into the container at /app
-COPY Domasna\ Rabota\ 3/CultureCompassDIANS/pom.xml .
+COPY Domasna\ Rabota\ 3/CultureCompassDIANS/pom.xml ./pom.xml
 COPY Domasna\ Rabota\ 3/CultureCompassDIANS/src ./src
+
+# Change to the directory of the specific project
+WORKDIR /app/Domasna\ Rabota\ 3/CultureCompassDIANS
 
 # Build the project and package the JAR file
 RUN mvn clean package -DskipTests
