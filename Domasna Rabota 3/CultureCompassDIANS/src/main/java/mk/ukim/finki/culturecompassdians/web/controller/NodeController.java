@@ -121,7 +121,6 @@ public class NodeController {
     public String saveNode(@ModelAttribute Node newNode, Model model) {
         try {
             Node node = openStreetMapService.getNodeInfo(newNode.getName());
-
             newNode.setId(node.getId());
             newNode.setLongitude(node.getLongitude());
             newNode.setLatitude(node.getLatitude());
@@ -142,6 +141,15 @@ public class NodeController {
 
             return "master-template";
         }
+    }
+
+    @PostMapping("/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String editNode(@ModelAttribute Node node) {
+        Node node1 = this.nodeService.findNodeById(node.getId()).get();
+        node1.setName(node.getName());
+        this.nodeService.saveNode(node1);
+        return "redirect:/node/all";
     }
 
     @GetMapping("/add-form")

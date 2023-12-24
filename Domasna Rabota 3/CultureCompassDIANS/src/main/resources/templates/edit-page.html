@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-5">
-                <form action="/node/add" method="POST">
+                <form action="/node/edit" method="POST">
                     <div class="form-group">
                         <label for="id" th:text="#{lang.nodeId}"></label>
                         <input type="text"
@@ -45,7 +45,7 @@
                                class="form-control"
                                id="longitude"
                                name="longitude"
-                               th:value="(${newNode} != null ? ${newNode.getLatitude()} : '')"
+                               th:value="(${newNode} != null ? ${newNode.getLongitude()} : '')"
                                readonly
                                placeholder="longitude">
                     </div>
@@ -56,6 +56,7 @@
                                id="category"
                                name="category"
                                th:value="(${newNode} != null ? ${newNode.getCategory()} : '')"
+                               readonly
                                placeholder="Category">
                     </div>
 
