@@ -59,6 +59,11 @@ li a{
     color: #cacaca;
 }
 
+.no-hover-effect a{
+    text-decoration: none;
+    color: #ffffff;
+}
+
 li:not(.no-hover-effect) a:not(.no-hover-effect):hover{
     text-decoration: none;
     background-image: linear-gradient(
