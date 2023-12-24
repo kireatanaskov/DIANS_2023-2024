@@ -1,53 +1,74 @@
 <div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" class="main-div">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/nodesCSS.css">
-  
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/nodesCSS.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <div class="sidebar">
-    <nav>
-      <ul>
-        <li>
-          <a href="/node/all">
-            <i class="fas fa-home"></i>
-            <p class="side-menu-texts">Home</p>
-          </a>
-        </li>
-        <li sec:authorize="isAnonymous()">
-          <a href="/login">
-            <i class="fas fa-sign-in-alt"></i>
-            <p class="side-menu-texts">Log In</p>
-          </a>
-        </li>
-        <li sec:authorize="isAuthenticated()">
-          <a href="/logout">
-            <i class="fas fa-sign-out-alt"></i>
-            <p class="side-menu-texts">Log Out</p>
-          </a>
-        </li>
-        <li class="search-box">
-          <i class="fas fa-search"></i>
-          <form class="side-menu-texts" method="GET" action="/node/filteredByName" style="display: flex">
-            <input class="form-control mr-sm-2 rounded-pill"
-                   type="search" name="search" placeholder=" Search.."
-                   onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)">
-          </form>
-        </li>
-        <li>
-          <a href="#">
-            <i class="far fa-user-circle"></i>
-            <p class="side-menu-texts" sec:authorize="isAuthenticated()">
-              Hello, <span sec:authentication="name"></span>!
-            </p>
-            <p class="side-menu-texts" sec:authorize="!isAuthenticated()">
-              Welcome, Guest!
-            </p>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#locales button").click(function () {
+                var selectedOption = $(this).text().trim().toLowerCase();
+                if (selectedOption !== '') {
+                    window.location.replace('/node/all?lang=' + selectedOption);
+                } else {
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
+    <div class="sidebar">
+        <nav>
+            <ul>
+                <li>
+                    <a href="/node/all">
+                        <i class="fas fa-home"></i>
+                        <p class="side-menu-texts" th:text="#{lang.home}">Home</p>
+                    </a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a href="/login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <p class="side-menu-texts" th:text="#{lang.login}">Log In</p>
+                    </a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p class="side-menu-texts" th:text="#{lang.logout}">Log Out</p>
+                    </a>
+                </li>
+                <li class="search-box">
+                    <i class="fas fa-search"></i>
+                    <form class="side-menu-texts" method="GET" action="/node/filteredByName" style="display: flex">
+                        <input class="form-control mr-sm-2 rounded-pill"
+                               type="search" name="search" placeholder=" Search.."
+                               onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)">
+                    </form>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="far fa-user-circle" style="margin-left: 10px"></i>
+                        <p style="width: 100px" class="side-menu-texts" sec:authorize="isAuthenticated()">
+                            Hello, <span sec:authentication="name"></span>!
+                        </p>
+                        <p class="side-menu-texts" th:text="#{lang.acc}" sec:authorize="!isAuthenticated()">
+                        </p>
+                    </a>
+                </li>
+                <li class="no-hover-effect">
+                    <a href="#">
+                        <i class="fas fa-globe" style="margin-left: -10px"></i>
+                        <div id="locales">
+                            <button type="button" style="background-color: #53443c; color: white; border: none">EN</button><span>|</span>
+                            <button type="button" style="background-color: #53443c; color: white; border: none">MK</button>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
     <div class="map-container">
         <div class="container-fluid inner-div">
@@ -56,26 +77,29 @@
                     <div id="additional-info"></div>
                     <div class="row">
                         <div class="col" id="starter">
-                            <h4 id="additional_info">Additional Information</h4>
+                            <h4 id="additional_info" th:text="#{lang.info}"></h4>
                             <hr/>
-                            <p id="info-content">
-                                Please select a location to display additional information.
+                            <p id="info-content" th:text="#{lang.infoTwo}">
                             </p>
                         </div>
                     </div>
-
+                    <button id="edit" th:text="#{lang.edit}"></button>
                     <hr>
+                    <button id="reset" th:text="#{lang.reset}"></button>
+                    <button id="navigate" th:text="#{lang.navigate}"></button>
                     <div id="controls"></div>
+                    <div id="current" th:text="#{lang.current}"></div>
+                    <div id="ratingtext" th:text="#{lang.rating}"></div>
 
                     <div class="row content-align d-flex align-items-center justify-content-center flex-wrap"
                          id="category">
                         <div class="col-md-8">
                             <div class="text-center">
                                 <div class="mb-2">
-                                    <label>Choose a category to filter the nodes:</label></div>
+                                    <label th:text="#{lang.cat}"></label></div>
                                 <div class="mb-2">
                                     <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()"
-                                            data-toggle="tooltip" data-placement="top" title="All">
+                                            data-toggle="tooltip" data-placement="top" th:title = "#{lang.all}">
                                         <i class="fas fa-globe-europe"></i>
                                     </button>
                                 </div>
@@ -85,33 +109,31 @@
                                         <div class="mb-2">
                                             <button th:if="${category} == 'archaeological_site'"
                                                     class="btn btn-sm btn-secondary button-style" name="category"
-                                                    data-toggle="tooltip" data-placement="bottom" title="Archaeological site"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.as}"
                                                     type="submit" th:value="${category}">
                                                 <i class="fas fa-landmark"></i>
                                             </button>
                                             <button th:if="${category} == 'place_of_worship'"
                                                     class="btn btn-sm btn-secondary button-style" name="category"
-                                                    data-toggle="tooltip" data-placement="bottom" title="Place of worship"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.pw}"
                                                     type="submit" th:value="${category}">
                                                 <i class="fas fa-place-of-worship"></i>
                                             </button>
                                             <button th:if="${category} == 'monument'"
                                                     class="btn btn-sm btn-secondary button-style" name="category"
-                                                    data-toggle="tooltip" data-placement="bottom" title="Monument"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.monument}"
                                                     type="submit" th:value="${category}">
                                                 <i class="fas fa-archway"></i>
                                             </button>
                                             <button th:if="${category} == 'memorial'"
                                                     class="btn btn-sm btn-secondary button-style" name="category"
-                                                    data-toggle="tooltip" data-placement="bottom" title="Memorial"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.memorial}"
                                                     type="submit" th:value="${category}">
-<!--                                                vidi edno od ovie samo ova mi javuvashe problem ne sakaseh da se stavi-->
                                                 <i class="fas fa-landmark-dome"></i>
-<!--                                                <i class="fas fa-house-flag"></i>-->
                                             </button>
                                             <button th:if="${category} == 'statue'"
                                                     class="btn btn-sm btn-secondary button-style" name="category"
-                                                    data-toggle="tooltip" data-placement="bottom" title="Statue"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.statue}"
                                                     type="submit" th:value="${category}">
                                                 <i class="fas fa-monument"></i>
                                             </button>
@@ -127,11 +149,12 @@
                         <div id="addNewNode">
                             <a
                                     href="/node/add-form"
-                                    class="btn btn-block btn-dark add-product-btn">
-                                Add new node
+                                    class="btn btn-block btn-dark add-product-btn" th:text="#{lang.add}">
+
                             </a>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="col-8">
@@ -173,11 +196,17 @@
         }).addTo(map);
 
         let markers = [];
+        $('#reset').hide();
+        $('#navigate').hide();
+        $('#edit').hide();
+        $('#current').hide();
+        $('#ratingtext').hide();
 
         nodes.forEach(function (node) {
             let marker = L.marker([node.latitude, node.longitude])
 
             marker.on('click', function (e) {
+                $('#reset').hide();
                 displayInfo(node);
                 changeColorAndFocus(marker, markers);
             });
@@ -253,8 +282,11 @@
             markers.push(marker);
         }
 
-        function createButton(text, onClick, cssClass) {
-            return $("<button>").text(text).on("click", onClick).addClass("button-style");
+        function configureButton(buttonId, clickHandler) {
+            let button = $(`#${buttonId}`).show();
+            button = document.getElementById(buttonId);
+            button.addEventListener('click', clickHandler);
+            button.classList.add('button-style');
         }
 
         const displayInfo = (node) => {
@@ -270,10 +302,11 @@
             let title = $("<h2>").text(`${node.name}`).addClass("title");
             let paragraph = $("<div>")
             let locations = $("<p>").append(`📍 ${node.latitude}, ${node.longitude}`);
-            let resetMapButton = createButton("Reset Map", resetMap, "btn btn-sm btn-secondary");
-            let navigateButton = createButton("Navigate", () => getLocation(node.latitude, node.longitude), "btn btn-sm btn-primary");
-            let ratingIntroText = $("<p>").text("Current rating:").addClass("controls-elements")
-                .css({paddingTop: "10px", marginBottom: "0px"});
+            //let resetMapButton = createButton("Reset Map", resetMap, "btn btn-sm btn-secondary");
+            let resetMapButton = configureButton('reset', resetMap);
+            //let navigateButton = createButton("Navigate", () => getLocation(node.latitude, node.longitude), "btn btn-sm btn-primary");
+            let navigateButton = configureButton('navigate', () => getLocation(node.latitude, node.longitude));
+            let ratingIntroText = $('#current').show().addClass("controls-elements");
 
             let rating = $("<p>").text(node.rating.toFixed(2)).addClass("controls-elements");
             let starContainer = $("<div>").addClass("controls-elements");
@@ -289,8 +322,8 @@
                 star.classList.add("star", "rounded");
 
                 if (isLoggedIn !== true) {
-                  star.style.pointerEvents = "none";
-                  star.classList.add("disabled");
+                    star.style.pointerEvents = "none";
+                    star.classList.add("disabled");
                 }
                 starsArray.push(star);
                 starContainer.append(star);
@@ -298,35 +331,37 @@
             console.log(starsArray);
 
             for (let i = 1; i <= 5; i++) {
-              if(isLoggedIn === true) {
-                starsArray[i - 1].setAttribute("onclick", `rateNode(${i}, ${node.id})`);
-                starsArray[i - 1].addEventListener("mouseover", function () {
-                  for (let j = 1; j <= i; j++) {
-                    starsArray[j - 1].classList.add(`hover-${j}`);
-                    console.log(j, i)
-                  }
-                });
+                if(isLoggedIn === true) {
+                    starsArray[i - 1].setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                    starsArray[i - 1].addEventListener("mouseover", function () {
+                        for (let j = 1; j <= i; j++) {
+                            starsArray[j - 1].classList.add(`hover-${j}`);
+                            console.log(j, i)
+                        }
+                    });
 
-                starsArray[i - 1].addEventListener("mouseout", function () {
-                  for (let j = 1; j <= 5; j++) {
-                    starsArray[j - 1].classList.remove(`hover-${j}`);
-                  }
-                });
-              }
+                    starsArray[i - 1].addEventListener("mouseout", function () {
+                        for (let j = 1; j <= 5; j++) {
+                            starsArray[j - 1].classList.remove(`hover-${j}`);
+                        }
+                    });
+                }
             }
 
 
-                res.append(title, paragraph, locations);
+            res.append(title, paragraph, locations);
             controls.append(resetMapButton, navigateButton, ratingIntroText, rating, starContainer);
 
             if (!isLoggedIn) {
-                const loginMessage = $("<p>").text("You must be logged in to leave a rating.").addClass("starText").css({marginLeft: "5px"});
+                let loginMessage = $('#ratingtext').show().addClass("starText");
+                //const loginMessage = $("<p>").text("You must be logged in to leave a rating.").addClass("starText").css({marginLeft: "5px"});
                 controls.append(loginMessage);
             }
 
             if (isAdmin) {
+                let editButton = configureButton('edit', () => editNode(node.id));
                 //const editButton = $("<button>").text("Edit").on("click", () => editNode(node.id));
-                const editButton = createButton("Edit", () => editNode(node.id), "btn btn-sm btn-info");
+                //const editButton = createButton("Edit", () => editNode(node.id), "btn btn-sm btn-info");
                 res.append(editButton);
             }
 
