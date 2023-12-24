@@ -3,7 +3,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    background-color: #11183e;
+    background-color: #53443c;
     /*align-items: center;*/
     justify-content: center;
 }
@@ -14,7 +14,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background-color: #11183e;
+    background-color: #53443c;
     overflow: hidden;
     transition: width 0.2s;
 }
@@ -25,7 +25,7 @@ body {
 }
 
 .sidebar:hover{
-    width: 200px;
+    width: 250px;
     overflow: visible;
     z-index: 2;
 }
@@ -38,7 +38,7 @@ nav{
 
 
 ul{
-    margin-left: -15px;
+    margin-left: -30px;
     list-style-type: none;
     height: 100%;
     text-decoration: none;
@@ -48,7 +48,7 @@ ul{
 }
 
 li a{
-    margin-left: -15px;
+    /*here*/
     text-decoration: none;
     width: 150px;
     display: flex;
@@ -59,7 +59,7 @@ li a{
     color: #cacaca;
 }
 
-li a:hover{
+li:not(.no-hover-effect) a:not(.no-hover-effect):hover{
     text-decoration: none;
     background-image: linear-gradient(
             to right,
@@ -76,7 +76,6 @@ i.fas{
 }
 
 i.far{
-    padding-left: 10px;
     font-size: 20px;
     text-align: right;
 }
@@ -91,8 +90,7 @@ i.far{
 }
 
 .sidebar .search-box{
-    margin-left: -15px;
-    background-color: #11183e;
+    background-color: #53443c;
     text-decoration: none;
     width: 180px;
     display: flex;
@@ -107,7 +105,7 @@ i.far{
     padding: 5px;
     color: white;
     margin-left: 20px;
-    background: #11183e;
+    background-color: #53443c;
     margin-right: 20px;
     height: 100%;
     width: 100%;
@@ -184,6 +182,7 @@ li p{
 
 .starText{
     font-size: 14px;
+    margin-left: 5px;
 }
 
 .star {
@@ -230,6 +229,8 @@ li p{
 
 .controls-elements {
     padding-left: 5px;
+    padding-top: 10px;
+    margin-bottom: 0
 }
 
 .side-menu-texts {
@@ -244,7 +245,8 @@ i.fa-place-of-worship,
 i.fa-monument,
 i.fa-user,
 i.fa-archway,
-i.fa-tree-city
+i.fa-tree-city,
+i.fa-landmark-dome
 {
     padding: 0 5px;
 }

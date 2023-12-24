@@ -1,7 +1,7 @@
 <div xmlns:th="http://www.thymeleaf.org">
     <section class="jumbotron text-center">
         <div class="container">
-            <h1 class="jumbotron-heading">Add new node</h1>
+            <h1 class="jumbotron-heading"><span th:text="#{lang.add}"></span></h1>
         </div>
     </section>
 
@@ -13,7 +13,7 @@
                         <p th:text="${errorMessage}"></p>
                     </div>
                     <div class="form-group">
-                        <label for="name">Node name</label>
+                        <label for="name" th:text="#{lang.nodeName}"></label>
                         <input type="text"
                                class="form-control"
                                id="name"
@@ -23,8 +23,8 @@
                                placeholder="Enter node name">
                     </div>
 
-                    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
-                    <a type="button" class="btn btn-primary" href="/node/all">Back</a>
+                    <button id="submit" type="submit" class="btn btn-primary" th:text="#{lang.submit}"></button>
+                    <a type="button" class="btn btn-primary" href="/node/all" th:text="#{lang.back}"></a>
                 </form>
             </div>
         </div>
