@@ -1,6 +1,9 @@
 package mk.ukim.finki.culturecompassdians.service;
 
+import mk.ukim.finki.culturecompassdians.model.Node;
+
 import java.io.IOException;
+import java.util.List;
 
 public interface CSVReaderService {
 
@@ -10,5 +13,5 @@ public interface CSVReaderService {
 
     void updateNodes();
 
-    void scrapeImagesForNodes();
+    void scrapeImagesForNodes(List<Node> nodes);
 }

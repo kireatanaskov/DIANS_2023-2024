@@ -173,8 +173,16 @@
   <div class="sidebar">
     <nav>
       <ul>
+        <!-- Slika logo -->
+        <!-- <li>
+          <a href="/node/all">
+            <i>
+              <img th:src="@{/images/CultureCompassLogo.jpg}" style="height: 50%; width: 50%;">
+            </i>
+          </a>
+        </li> -->
         <li>
-          <a href="/home">
+          <a href="/node/all">
             <i class="fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -208,7 +216,6 @@
           <div id="additional-info"></div>
           <div class="row">
             <div class="col" id="starter">
-              <h4>Additional Information</h4>
               <hr />
               <p id="info-content">
                 Please select a location to display additional information.
@@ -295,10 +302,21 @@
     nodes.forEach(function (node) {
       let marker = L.marker([node.latitude, node.longitude])
 
+      marker.bindPopup(`<b>${node.name}</b><br/>${node.category}<br/> Rating: ${node.rating.toFixed(2)}`);
+
       marker.on('click', function (e) {
         displayInfo(node);
-        changeColorAndFocus(marker, markers);
+        changeColorAndFocus(marker, markers, e);
       });
+
+      marker.on('mouseover', function (e) {
+        changeColorAndFocus(marker, markers, e);
+        marker.openPopup();
+      });
+
+      marker.on('mouseout', function(e) {
+        marker.closePopup();
+      })
 
       markers.push(marker);
     });
@@ -365,6 +383,7 @@
     }
 
     const displayInfo = (node) => {
+      
       $("#additional-info").empty();  // Clear previous node data
       $("#starter").remove();
       //$("#category").remove();
@@ -374,6 +393,14 @@
 
       let res = $("<div>").addClass("container");
       let title = $("<h2>").text(`${node.name}`);
+      let markerIMG = null;
+      if(node.imageSource) {
+        if(node.imageSource.startsWith("https")) {
+          markerIMG = $("<img>").attr("src", node.imageSource)
+                    .attr("style" ,"width:50%; height: 50%;")
+        }
+          
+      }
       let paragraph = $("<div>")
       let locations = $("<p>").append(`📍 ${node.latitude}, ${node.longitude}`);
       let resetMapButton = createButton("Reset Map", resetMap, "btn btn-sm btn-secondary");
@@ -401,6 +428,7 @@
       }
 
       res.append(title,paragraph, locations);
+      if(markerIMG) res.append(markerIMG);
       controls.append(resetMapButton, navigateButton, ratingIntroText, rating, starContainer);
 
       if (!isLoggedIn) {
@@ -421,7 +449,7 @@
       alert("You must be logged in to leave a rating.");
     }
 
-    const changeColorAndFocus = (marker, markers) => {
+    const changeColorAndFocus = (marker, markers, event) => {
       markers.forEach((m) => {
         m.setIcon(new L.Icon.Default());
       });
@@ -434,8 +462,9 @@
         tooltipAnchor: [16, -28],
         shadowSize: [41, 41]
       }))
-
-      map.setView(marker.getLatLng(), 16);
+      if(event.type != "mouseover") {
+        map.setView(marker.getLatLng(), 16);
+      }
     }
 
     const resetMap = () => {

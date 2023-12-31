@@ -1,7 +1,8 @@
 package mk.ukim.finki.culturecompassdians.web.controller;
 
+import mk.ukim.finki.culturecompassdians.model.Node;
 import mk.ukim.finki.culturecompassdians.service.CSVReaderService;
-import org.springframework.security.access.annotation.Secured;
+import mk.ukim.finki.culturecompassdians.service.NodeService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/admin")
@@ -17,12 +22,14 @@ import java.io.IOException;
 public class AdminController {
 
     private final CSVReaderService csvReaderService;
+    private final NodeService nodeService;
 
-    public AdminController(CSVReaderService csvReaderService) {
+    public AdminController(CSVReaderService csvReaderService, NodeService nodeService) {
         this.csvReaderService = csvReaderService;
+        this.nodeService = nodeService;
     }
 
-   // @Secured("ROLE_ADMIN")
+    // @Secured("ROLE_ADMIN")
     @GetMapping("/panel")
     public String adminPanel(Model model) {
         model.addAttribute("bodyContent", "admin-page");
@@ -40,11 +47,34 @@ public class AdminController {
                 System.out.println(e.getMessage());
             }
             csvReaderService.updateNodes();
-//            csvReaderService.scrapeImagesForNodes();
 
             model.addAttribute("message", "Currently reading from CSV, and WebScraping");
         }
         model.addAttribute("bodyContent", "admin-page");
+        return "master-template";
+    }
+
+    @GetMapping("/imagesOne")
+    public String scrapeHalfImages(Model model) {
+        List<Node> allNodes = nodeService.findAllNodes();
+        List<Node> nodes = allNodes.stream()
+                .limit(allNodes.size() / 2)
+                .toList();
+        csvReaderService.scrapeImagesForNodes(nodes);
+        model.addAttribute("bodyContent", "admin-page");
+        return "master-template";
+    }
+
+    @GetMapping("/imagesTwo")
+    public String scrapeLastImages(Model model) {
+        List<Node> allNodes = nodeService.findAllNodes();
+        // Get from half to the end
+        List<Node> nodes = IntStream.range(allNodes.size() / 2, allNodes.size())
+                .mapToObj(allNodes::get).collect(Collectors.toList());
+
+        csvReaderService.scrapeImagesForNodes(nodes);
+        model.addAttribute("bodyContent", "admin-page");
+
         return "master-template";
     }
 }
