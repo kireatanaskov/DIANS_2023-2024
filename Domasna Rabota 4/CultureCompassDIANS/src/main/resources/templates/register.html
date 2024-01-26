@@ -1,0 +1,65 @@
+<! DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title> Sign Up </title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/registerCSS.css}">
+</head>
+
+<body th:style="'background-image:url(' + @{/images/background.jpg} + '); background-repeat: no-repeat; background-size: 100% 100%;'">
+
+<div class="global-container">
+  <div class="card login-form">
+    <div class="card-body">
+      <div class="rounded-box">
+        <a class="arrow arrow-left" href="javascript:history.back()"></a>
+      </div>
+      <h3 class="card-title text-center" th:text="#{lang.create}"> </h3>
+      <div th:if="${error}">
+        <div class="alert alert-danger" th:text="#{lang.e3}"></div>
+      </div>
+      <div th:if="${param.success}" th:text="#{lang.e4}">
+        <div class="alert alert-info">
+        </div>
+      </div>
+
+      <div class="card-text">
+
+        <form  method="post"
+               role="form"
+               th:action="@{/register/save}">
+          <div class="form-group">
+            <label for="username" th:text="#{lang.username}"> </label>
+            <input type="text" class="form-control form-control-sm" id="username" name="username" required>
+          </div>
+          <div class="form-group">
+            <label for="password" th:text="#{lang.password}"></label>
+            <input type="password" class="form-control form-control-sm" id="password" name="password" required>
+          </div>
+          <div class="form-group">
+            <label for="repeatedPassword" th:text="#{lang.rpassword}"></label>
+            <input type="password" class="form-control form-control-sm" id="repeatedPassword" name="repeatedPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="firstName" th:text="#{lang.name}"> </label>
+            <input type="text" class="form-control form-control-sm" id="firstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName" th:text="#{lang.surname}"></label>
+            <input type="text" class="form-control form-control-sm" id="lastName" name="lastName" required>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit" th:text="#{lang.register}"></button>
+
+          <div class="sign-up">
+            <span th:text="#{lang.text2}"></span>
+            <a href="/login" th:text="#{lang.login}"> </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

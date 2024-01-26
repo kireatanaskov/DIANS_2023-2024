@@ -1,0 +1,413 @@
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" class="main-div">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/nodesCSS.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#locales button").click(function () {
+                var selectedOption = $(this).text().trim().toLowerCase();
+                if (selectedOption !== '') {
+                    window.location.replace('/node/all?lang=' + selectedOption);
+                } else {
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
+    <div class="sidebar">
+        <nav>
+            <ul>
+                <li>
+                    <a href="/node/all">
+                        <i class="fas fa-home"></i>
+                        <p class="side-menu-texts" th:text="#{lang.home}">Home</p>
+                    </a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a href="/login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <p class="side-menu-texts" th:text="#{lang.login}">Log In</p>
+                    </a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p class="side-menu-texts" th:text="#{lang.logout}">Log Out</p>
+                    </a>
+                </li>
+                <li class="search-box">
+                    <i class="fas fa-search"></i>
+                    <form class="side-menu-texts" method="GET" action="/node/filteredByName" style="display: flex">
+                        <input class="form-control mr-sm-2 rounded-pill"
+                               type="search" name="search" placeholder=" Search.."
+                               onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)">
+                    </form>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="far fa-user-circle" style="margin-left: 10px"></i>
+                        <p style="width: 100px" class="side-menu-texts" sec:authorize="isAuthenticated()">
+                            Hello, <span sec:authentication="name"></span>!
+                        </p>
+                        <p class="side-menu-texts" th:text="#{lang.acc}" sec:authorize="!isAuthenticated()">
+                        </p>
+                    </a>
+                </li>
+                <li class="no-hover-effect">
+                    <a href="#">
+                        <i class="fas fa-globe" style="margin-left: -10px"></i>
+                        <div id="locales">
+                            <button type="button" style="background-color: #53443c; color: white; border: none">EN
+                            </button>
+                            <span>|</span>
+                            <button type="button" style="background-color: #53443c; color: white; border: none">MK
+                            </button>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="map-container">
+        <div class="container-fluid inner-div">
+            <div class="row" style="margin: 0">
+                <div class="col-4" style="padding: 0">
+                    <div id="additional-info"></div>
+                    <div class="row">
+                        <div class="col" id="starter">
+                            <h4 id="additional_info" th:text="#{lang.info}"></h4>
+                            <hr/>
+                            <p id="info-content" th:text="#{lang.infoTwo}">
+                            </p>
+                        </div>
+                    </div>
+                    <button id="edit" th:text="#{lang.edit}"></button>
+                    <hr>
+                    <button id="reset" th:text="#{lang.reset}"></button>
+                    <button id="navigate" th:text="#{lang.navigate}"></button>
+                    <div id="controls"></div>
+                    <div id="current" th:text="#{lang.current}"></div>
+                    <div id="ratingtext" th:text="#{lang.rating}"></div>
+
+                    <div class="row content-align d-flex align-items-center justify-content-center flex-wrap"
+                         id="category">
+                        <div class="col-md-8">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <label th:text="#{lang.cat}"></label></div>
+                                <div class="mb-2">
+                                    <button class="btn btn-sm btn-secondary button-style" onclick="resetMap()"
+                                            data-toggle="tooltip" data-placement="top" th:title="#{lang.all}">
+                                        <i class="fas fa-globe-europe"></i>
+                                    </button>
+                                </div>
+
+                                <form method="GET" action="/node/filteredByCategory" class="d-flex flex-wrap">
+                                    <th:block th:each="category : ${categories}">
+                                        <div class="mb-2">
+                                            <button th:if="${category} == 'archaeological_site'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.as}"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-landmark"></i>
+                                            </button>
+                                            <button th:if="${category} == 'place_of_worship'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom" th:title="#{lang.pw}"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-place-of-worship"></i>
+                                            </button>
+                                            <button th:if="${category} == 'monument'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom"
+                                                    th:title="#{lang.monument}"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-archway"></i>
+                                            </button>
+                                            <button th:if="${category} == 'memorial'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom"
+                                                    th:title="#{lang.memorial}"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-landmark-dome"></i>
+                                            </button>
+                                            <button th:if="${category} == 'statue'"
+                                                    class="btn btn-sm btn-secondary button-style" name="category"
+                                                    data-toggle="tooltip" data-placement="bottom"
+                                                    th:title="#{lang.statue}"
+                                                    type="submit" th:value="${category}">
+                                                <i class="fas fa-monument"></i>
+                                            </button>
+                                        </div>
+                                    </th:block>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="col-sm-3 col-md-7"
+                         th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                        <div id="addNewNode">
+                            <a
+                                    href="/node/add-form"
+                                    class="btn btn-block btn-dark add-product-btn" th:text="#{lang.add}">
+
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-8">
+                    <div class="map">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var searchForm = document.getElementById("searchForm");
+
+            searchForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                performSearch();
+            });
+
+            function performSearch() {
+                var searchTerm = searchForm.querySelector('input[name="search"]').value;
+                window.location.href = "/node/filteredByName?search=" + encodeURIComponent(searchTerm);
+            }
+
+            searchForm.querySelector('input[name="search"]').addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    performSearch();
+                }
+            });
+        });
+
+        let nodes = [(${nodes})];
+        let map = L.map("map")
+            .setView([41.6086, 21.7453], 9); // Skopje
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: ''
+        }).addTo(map);
+
+        let markers = [];
+        $('#reset').hide();
+        $('#navigate').hide();
+        $('#edit').hide();
+        $('#current').hide();
+        $('#ratingtext').hide();
+
+        nodes.forEach(function (node) {
+            let marker = L.marker([node.latitude, node.longitude])
+
+            marker.on('click', function (e) {
+                $('#reset').hide();
+                displayInfo(node);
+                changeColorAndFocus(marker, markers);
+            });
+
+            markers.push(marker);
+        });
+
+        let markerGroup = L.featureGroup(markers).addTo(map);
+
+        map.fitBounds(markerGroup.getBounds());
+
+        function editNode(nodeId) {
+            window.location.href = '/node/edit-form/' + nodeId;
+        }
+
+        // Getting location
+        function getLocation(nodeLatitude, nodeLongitude) {
+            // Get the location from the user
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+
+                    console.log(userLatitude, userLongitude); // For kind of debugging purposes
+
+                    sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude);
+                }, function () {
+                    alert("Geolocation access is blocked. Please update your browser settings to allow access.")
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.")
+            }
+        }
+
+        let userLatitude;
+        let userLongitude;
+        let isAdmin = [(${isAdmin})]
+        let isLoggedIn = [(${isLogin})]
+
+        function sendLocationToServer(userLatitude, userLongitude, nodeLatitude, nodeLongitude) {
+            console.log("Before fetch");
+            fetch('/map/findRoute', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded',},
+                body: `startLat=${userLatitude}&startLon=${userLongitude}&endLat=${nodeLatitude}&endLon=${nodeLongitude}`,
+            }).then(response => {
+                console.log("Received response with status: " + response.status); // For kind of debugging purposes
+
+                if (response.status === 200) {
+                    console.log("Location sent successfully!");
+                    window.location.href = '/map';
+                } else {
+                    alert("Error getting location");
+                }
+            }).catch(error => {
+                console.error("Error sending location:", error);
+            });
+        }
+
+        function rateNode(ratingValue, nodeId) {
+            console.log("User rated:", ratingValue);
+            window.location.href = '/node/updateRating/' + nodeId + '?userRating=' + ratingValue;
+        }
+
+        function focusOnNode(node) {
+            let marker = L.marker([node.latitude, node.longitude])
+
+            marker.on('click', function (e) {
+                displayInfo(node);
+                changeColorAndFocus(marker, markers);
+            });
+
+            markers.push(marker);
+        }
+
+        function configureButton(buttonId, clickHandler) {
+            let button = $(`#${buttonId}`).show();
+            button = document.getElementById(buttonId);
+            button.addEventListener('click', clickHandler);
+            button.classList.add('button-style');
+        }
+
+        const displayInfo = (node) => {
+            $("#additional-info").empty();  // Clear previous node data
+            $("#starter").remove();
+            $("#category").remove();
+            $("#addNewNode").remove();
+            let mainDiv = $("#additional-info")
+            let controls = $("#controls");
+            controls.empty();
+
+            let res = $("<div>").addClass("container");
+            let title = $("<h2>").text(`${node.name}`).addClass("title");
+            let paragraph = $("<div>")
+            let locations = $("<p>").append(`📍 ${node.latitude}, ${node.longitude}`);
+            let resetMapButton = configureButton('reset', resetMap);
+            let navigateButton = configureButton('navigate', () => getLocation(node.latitude, node.longitude));
+            let ratingIntroText = $('#current').show().addClass("controls-elements");
+
+            let rating = $("<p>").text(node.rating.toFixed(2)).addClass("controls-elements");
+            let starContainer = $("<div>").addClass("controls-elements");
+
+            if (node.wikipediaData) {
+                paragraph.append(`<hr>${node.wikipediaData}`).addClass("paragraph").addClass("text-justify");
+            }
+
+            let starsArray = []
+            for (let i = 1; i <= 5; i++) {
+                let star = document.createElement("button");
+                star.innerHTML = "&#9733;";
+                star.classList.add("star", "rounded");
+
+                if (isLoggedIn !== true) {
+                    star.style.pointerEvents = "none";
+                    star.classList.add("disabled");
+                }
+                starsArray.push(star);
+                starContainer.append(star);
+            }
+            console.log(starsArray);
+
+            for (let i = 1; i <= 5; i++) {
+                if (isLoggedIn === true) {
+                    starsArray[i - 1].setAttribute("onclick", `rateNode(${i}, ${node.id})`);
+                    starsArray[i - 1].addEventListener("mouseover", function () {
+                        for (let j = 1; j <= i; j++) {
+                            starsArray[j - 1].classList.add(`hover-${j}`);
+                            console.log(j, i)
+                        }
+                    });
+
+                    starsArray[i - 1].addEventListener("mouseout", function () {
+                        for (let j = 1; j <= 5; j++) {
+                            starsArray[j - 1].classList.remove(`hover-${j}`);
+                        }
+                    });
+                }
+            }
+
+
+            res.append(title, paragraph, locations);
+            controls.append(resetMapButton, navigateButton, ratingIntroText, rating, starContainer);
+
+            if (!isLoggedIn) {
+                let loginMessage = $('#ratingtext').show().addClass("starText");
+                //const loginMessage = $("<p>").text("You must be logged in to leave a rating.").addClass("starText").css({marginLeft: "5px"});
+                controls.append(loginMessage);
+            }
+
+            if (isAdmin) {
+                let editButton = configureButton('edit', () => editNode(node.id));
+                //const editButton = $("<button>").text("Edit").on("click", () => editNode(node.id));
+                //const editButton = createButton("Edit", () => editNode(node.id), "btn btn-sm btn-info");
+                res.append(editButton);
+            }
+
+            mainDiv.append(res);
+        }
+
+        const changeColorAndFocus = (marker, markers) => {
+            markers.forEach((m) => {
+                m.setIcon(new L.Icon.Default());
+            });
+
+            marker.setIcon(new L.Icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                tooltipAnchor: [16, -28],
+                shadowSize: [41, 41]
+            }))
+
+            map.setView(marker.getLatLng(), 16);
+        }
+
+        const resetMap = () => {
+            map.setView([41.6086, 21.7453], 9);
+
+            markers.forEach((marker) => {
+                marker.setIcon(new L.Icon.Default());
+            });
+
+            $("#additional-info").empty();
+            $("#controls").empty();
+
+            window.location.href = '/node/all';
+        }
+
+        function clearPlaceholder(input) {
+            input.placeholder = '';
+        }
+
+        function restorePlaceholder(input) {
+            input.placeholder = '  Search..';
+        }
+
+    </script>
+</div>
