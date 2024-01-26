@@ -1,0 +1,64 @@
+<! DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title> Sign In </title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/loginCSS.css}">
+
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#locales").change(function () {
+      var selectedOption = $('#locales').val();
+      if (selectedOption != ''){
+        window.location.replace('login?lang=' + selectedOption);
+      }
+      else {
+        window.location.replace('login');
+      }
+    });
+  });
+</script>
+
+<body th:style="'background-image:url(' + @{/images/background.jpg} + '); background-repeat: no-repeat; background-size: cover;'">
+
+<div class="global-container">
+  <div class="card login-form">
+    <div class="card-body">
+      <div class="rounded-box">
+        <a class="arrow arrow-left" href="javascript:history.back()"></a>
+      </div>
+      <h3 class="card-title text-center" th:text="#{lang.signin}"> </h3>
+      <div th:if="${param.error}">
+        <div class="alert alert-danger" th:text="#{lang.e}"></div>
+      </div>
+      <div th:if="${param.logout}">
+        <div class="alert alert-success" th:text="#{lang.e2}"></div>
+      </div>
+      <div class="card-text">
+        <form action="/login"  method="post">
+          <div class="form-group">
+            <label for="username" th:text="#{lang.username}">  </label>
+            <input type="text" class="form-control form-control-sm" id="username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="password" th:text="#{lang.password}"> </label>
+            <input type="password" class="form-control form-control-sm" id="password" name="password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" th:text="#{lang.signin}"> </button>
+
+          <div class="sign-up">
+            <span th:text="#{lang.text}">Don't have an account?</span>
+            <a href="/register" th:text="#{lang.create}"> </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Result</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" >
+
+</head>
+<body>
+<h1>Waypoints Map</h1>
+
+<!--Map Container-->
+<div id="map" th:style="'height: 500px; width: 500px; margin: 0 auto;'"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var wayBetweenPoints = [(${wayBetweenPoints})];
+
+    var map = L.map('map')
+        .setView([41.6086, 21.7453], 8);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+    }).addTo(map);
+
+    var polyline = L.polyline(wayBetweenPoints.map(point => [point.latitude, point.longitude]), {color: 'blue'}).addTo(map);
+
+    map.fitBounds(polyline.getBounds());
+    /*]]>*/
+</script>
+</body>
+</html>

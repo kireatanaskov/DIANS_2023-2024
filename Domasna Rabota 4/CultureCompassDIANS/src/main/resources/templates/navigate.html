@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css" />
+    <link rel="stylesheet" th:href="@{/navigateCSS.css}">
+
+</head>
+<body>
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" class="main-div">
+    <div id="map"></div>
+    <a class="back-button" href="/node/all" th:text="#{lang.back}"></a>
+</div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia2lyNGVleiIsImEiOiJjbHFiNXRuaXcyNGVuMmludWVtMjh6NHdwIn0.iUqW8uzHXcGVBNlFNvhwGA';
+
+    function initMap() {
+        let startLon = [(${session.startLon})];
+        let startLat = [(${session.startLat})];
+        let endLon = [(${session.endLon})];
+        let endLat = [(${session.endLat})];
+
+        let startLatLng = [startLon, startLat];
+        let endLatLng = [endLon, endLat];
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: startLatLng,
+            zoom: 14
+        });
+
+        new mapboxgl.Marker().setLngLat(startLatLng).addTo(map);
+        new mapboxgl.Marker().setLngLat(endLatLng).addTo(map);
+
+        var directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken,
+            unit: 'metric',
+            profile: 'mapbox/driving',
+            alternatives: true,
+            geometries: 'geojson',
+        });
+
+        directions.setOrigin(startLatLng);
+        directions.setDestination(endLatLng);
+        map.addControl(directions, 'top-left');
+
+        directions.on('route', function (event) {
+            var routeGeoJSON = event.route.geometry;
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': routeGeoJSON
+                }
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#888',
+                    'line-width': 8
+                }
+            });
+        });
+    }
+    initMap();
+</script>
+</body>
+</html>
+
+
