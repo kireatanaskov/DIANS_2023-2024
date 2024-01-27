@@ -1,0 +1,76 @@
+html {
+    height: 100%;
+}
+body {
+    height: 100%;
+}
+.global-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+form {
+    padding-top: 10px;
+    font-size: 14px;
+    margin-top: 30px;
+}
+.card-title {
+    font-weight: 300;
+}
+.btn-primary {
+    font-size: 14px;
+    margin-top: 20px;
+    background-color: #58370c;
+}
+.login-form {
+    width: 330px;
+    margin: 20px;
+    border-radius: 25px;
+}
+.sign-up {
+    text-align: center;
+    padding: 20px 0 0;
+}
+.alert {
+    margin-bottom: -30px;
+    font-size: 13px;
+    margin-top: 20px;
+}
+.form-group input{
+    border-radius: 25px;
+}
+.arrow {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-top: 2px solid #000;
+    border-right: 2px solid #000;
+    margin-top: 8px;
+    margin-left: 10px;
+}
+.arrow-left {
+    transform: rotate(-135deg);
+}
+.rounded-box{
+    position: relative;
+    border-radius: 100px;
+    width: 30px;
+    height: 32px;
+}
+.rounded-box::before {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent #f1f1f1 transparent;
+}
+.rounded-box:hover{
+    background-color: lightblue;
+    border: darkgray solid 1px;
+}
+.btn-block:hover{
+    background-color: dodgerblue;
+}

@@ -47,6 +47,16 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean isLoggedIn(User user) {
+        return user != null;
+    }
+
+    @Override
+    public boolean isAdmin(User user) {
+        return isLoggedIn(user) && user.getRole() == Role.ROLE_ADMIN;
+    }
+
     private UserDto mapToUserDto(User user) {
         UserDto userDto = new UserDto();
         String[] str = user.getName().split(" ");

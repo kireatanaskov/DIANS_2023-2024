@@ -11,4 +11,6 @@ public interface UserService {
     User findUserByUsername(String username);
 
     List<UserDto> findAllUsers();
+    boolean isLoggedIn(User user);
+    boolean isAdmin(User user);
 }
