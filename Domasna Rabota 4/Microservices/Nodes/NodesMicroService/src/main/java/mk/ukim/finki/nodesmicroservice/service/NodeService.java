@@ -1,6 +1,6 @@
-package mk.ukim.finki.culturecompassdians.service;
+package mk.ukim.finki.nodesmicroservice.service;
 
-import mk.ukim.finki.culturecompassdians.model.Node;
+import mk.ukim.finki.nodesmicroservice.model.Node;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +12,19 @@ public interface NodeService {
     Node findNodeById(Long id);
 
     List<Node> findByNameContaining(String text);
+
     List<Node> findByCategory(String text);
+
     List<String> findAllCategories();
 
-    Node saveNode(Node node);
+    Node saveNode(Node point);
+
     Node editNode(Node node);
 
     void saveAll(List<Node> nodes);
 
-    Node deleteNodeById(Long id);
+    Node deleteNode(Long id);
+
     Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category);
 
 }

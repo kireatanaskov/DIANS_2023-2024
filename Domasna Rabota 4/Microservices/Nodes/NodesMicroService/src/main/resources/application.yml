@@ -1,0 +1,17 @@
+# Discovery Server Access
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+# HTTP Server
+server:
+  port: 9001
+
+spring:
+  application:
+    name: NODE-SERVICE
+
+logging:
+  level:
+    org.springframework.cloud.netflix.eureka: DEBUG

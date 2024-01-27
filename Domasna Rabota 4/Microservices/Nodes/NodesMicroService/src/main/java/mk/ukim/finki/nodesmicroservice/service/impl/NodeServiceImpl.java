@@ -1,9 +1,10 @@
-package mk.ukim.finki.culturecompassdians.service.impl;
+package mk.ukim.finki.nodesmicroservice.service.impl;
 
-import mk.ukim.finki.culturecompassdians.model.Node;
-import mk.ukim.finki.culturecompassdians.repository.NodeRepository;
-import mk.ukim.finki.culturecompassdians.service.NodeFeignClient;
-import mk.ukim.finki.culturecompassdians.service.NodeService;
+
+import mk.ukim.finki.nodesmicroservice.model.Node;
+import mk.ukim.finki.nodesmicroservice.model.exception.NodeNotFoundException;
+import mk.ukim.finki.nodesmicroservice.repository.NodeRepository;
+import mk.ukim.finki.nodesmicroservice.service.NodeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,46 +14,47 @@ import java.util.Optional;
 public class NodeServiceImpl implements NodeService {
 
     private final NodeRepository nodeRepository;
-    private final NodeFeignClient feignClient;
 
-    public NodeServiceImpl(NodeRepository nodeRepository, NodeFeignClient feignClient) {
+    public NodeServiceImpl(NodeRepository nodeRepository) {
         this.nodeRepository = nodeRepository;
-        this.feignClient = feignClient;
     }
 
     @Override
     public List<Node> findAllNodes() {
-        return feignClient.findAllNodes();
+        return nodeRepository.findAll();
     }
 
     @Override
     public Node findNodeById(Long id) {
-        return feignClient.findNodeById(id);
+        return nodeRepository.findById(id)
+                .orElseThrow(() -> new NodeNotFoundException(id));
     }
 
     @Override
     public List<Node> findByNameContaining(String text) {
-        return feignClient.findByNameContaining(text.toLowerCase());
+        return nodeRepository.findByName(text.toLowerCase());
     }
 
     @Override
     public List<Node> findByCategory(String text) {
-        return feignClient.findByCategory(text);
+        return nodeRepository.findByCategory(text);
     }
 
     @Override
     public List<String> findAllCategories() {
-        return feignClient.findAllCategories();
+        return nodeRepository.findAllCategories();
     }
 
     @Override
     public Node saveNode(Node point) {
-        return feignClient.saveNode(point);
+        return nodeRepository.save(point);
     }
 
     @Override
     public Node editNode(Node node) {
-        return feignClient.editNode(node);
+        Node node1 = findNodeById(node.getId());
+        node1.setName(node.getName());
+        return saveNode(node1);
     }
 
     @Override
@@ -61,11 +63,12 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public Node deleteNodeById(Long id) {
-        return feignClient.deleteNodeById(id);
+    public Node deleteNode(Long id) {
+        Node node = findNodeById(id);
+        nodeRepository.delete(node);
+        return node;
     }
 
-    // TODO: Not used anywhere
     @Override
     public Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category) {
         this.nodeRepository.deleteByName(name);
