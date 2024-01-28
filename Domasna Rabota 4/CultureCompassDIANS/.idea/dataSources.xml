@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="kompasLogin_db@localhost" uuid="6449bb9d-507c-46b6-9873-ef284942fc60">
+    <data-source source="LOCAL" name="kompasLogin_db@localhost [2]" uuid="d27c405f-1b2d-4a5f-9d28-3a299e5da217">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

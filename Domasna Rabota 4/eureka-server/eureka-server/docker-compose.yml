@@ -1,0 +1,53 @@
+version: '3'
+services:
+  db:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://r-server.postgres.database.azure.com:5432/kompasLogin_db
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password*123
+  eureka-server4e:
+    build: .
+    image: "docker-eureka"
+    ports:
+      - "8761:8761"
+  auth-microservice:
+    build: .
+    image: "docker-auth"
+    ports:
+      - "9002:9002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://r-server.postgres.database.azure.com:5432/kompasLogin_db
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password*123
+    depends_on:
+      - db
+      - eureka-server4e
+  node-microservice:
+    build: .
+    image: "docker-node"
+    ports:
+      - "9001:9001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://r-server.postgres.database.azure.com:5432/kompasLogin_db
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password*123
+    depends_on:
+      - db
+      - eureka-server4e
+  culture-compass:
+    build: .
+    image: "docker-cc"
+    ports:
+      - "9009:9009"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://r-server.postgres.database.azure.com:5432/kompasLogin_db
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password*123
+    depends_on:
+      - db
+      - node-microservice
+      - auth-microservice
+
