@@ -1,50 +1,54 @@
 package mk.ukim.finki.culturecompassdians.service.impl;
 
+import feign.Response;
 import lombok.NonNull;
 import mk.ukim.finki.culturecompassdians.model.Role;
 import mk.ukim.finki.culturecompassdians.model.User;
 import mk.ukim.finki.culturecompassdians.model.UserDto;
 import mk.ukim.finki.culturecompassdians.repository.UserRepository;
+import mk.ukim.finki.culturecompassdians.service.UserFeignClient;
 import mk.ukim.finki.culturecompassdians.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     final private UserRepository userRepository;
+    final private UserFeignClient userFeignClient;
     final private PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
+                           UserFeignClient userFeignClient,
                            @NonNull PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.userFeignClient = userFeignClient;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void saveUser(UserDto userDto) {
-        User user = new User();
-        user.setName(userDto.getFirstName() + " " + userDto.getLastName());
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole(Role.valueOf("ROLE_USER"));
-        userRepository.save(user);
+    public User saveUser(UserDto userDto) {
+        String userInfo = createStringForUser(userDto);
+        return userFeignClient.registration(userInfo);
     }
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        if (userFeignClient.findByUsername(username).getStatusCode() == HttpStatus.OK &&
+        userFeignClient.findByUsername(username).getBody() != null) {
+            return userFeignClient.findByUsername(username).getBody();
+        } else {
+            return null;
+        }
     }
-
     @Override
-    public List<UserDto> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map((user) -> mapToUserDto(user))
-                .collect(Collectors.toList());
+    public boolean userExists(User user) {
+        return user != null && user.getUsername() != null && !user.getUsername().isEmpty();
     }
 
     @Override
@@ -57,14 +61,17 @@ public class UserServiceImpl implements UserService {
         return isLoggedIn(user) && user.getRole() == Role.ROLE_ADMIN;
     }
 
-    private UserDto mapToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        String[] str = user.getName().split(" ");
-        userDto.setFirstName(str[0]);
-        userDto.setLastName(str[1]);
-        userDto.setUsername(user.getUsername());
-        return userDto;
+    private String createStringForUser(UserDto userDto) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(userDto.getFirstName()).
+                append(" ").
+                append(userDto.getLastName()).
+                append(" ").
+                append(userDto.getUsername()).
+                append(" ").
+                append(userDto.getPassword());
+
+        return sb.toString();
     }
-
-
 }

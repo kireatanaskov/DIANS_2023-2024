@@ -34,7 +34,7 @@ public class RegistrationController {
                                Model model){
         User existingUser = userService.findUserByUsername(userDto.getUsername());
 
-        if(existingUser != null && existingUser.getUsername() != null && !existingUser.getUsername().isEmpty()){
+        if(userService.userExists(existingUser)){
             result.rejectValue("username", null,
                     "There is already an account registered with the same username");
         }
@@ -49,4 +49,5 @@ public class RegistrationController {
         userService.saveUser(userDto);
         return "redirect:/register?success";
     }
+
 }

@@ -9,7 +9,7 @@ public interface NodeService {
 
     List<Node> findAllNodes();
 
-    Optional<Node> findNodeById(Long id);
+    Node findNodeById(Long id);
 
     List<Node> findByNameContaining(String text);
     List<Node> findByCategory(String text);
@@ -19,7 +19,8 @@ public interface NodeService {
 
     void saveAll(List<Node> nodes);
 
-    void deleteNodeById(Long id);
-    Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category);
+    void  deleteNodeById(Long id);
+//    Node editNode(Node node);
+//    Optional<Node> save(Long id, String name, Double latitude, Double longitude, String category);
 
 }

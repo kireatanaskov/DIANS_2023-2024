@@ -117,7 +117,7 @@ public class NodeController {
     @PostMapping("/edit")
     @PreAuthorize("hasRole('ADMIN')")
     public String editNode(@ModelAttribute Node node) {
-        Node node1 = this.nodeService.findNodeById(node.getId()).get();
+        Node node1 = this.nodeService.findNodeById(node.getId());
         node1.setName(node.getName());
         this.nodeService.saveNode(node1);
         return "redirect:/node/all";
@@ -134,8 +134,8 @@ public class NodeController {
     @GetMapping("/edit-form/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String editNodePage(@PathVariable Long id, Model model) {
-        if (this.nodeService.findNodeById(id).isPresent()) {
-            Node node = this.nodeService.findNodeById(id).get();
+        if (this.nodeService.findNodeById(id) != null) {
+            Node node = this.nodeService.findNodeById(id);
             model.addAttribute("newNode", node);
             model.addAttribute("bodyContent","edit-page");
             return "master-template";
@@ -148,7 +148,7 @@ public class NodeController {
                                @RequestParam String userRating,
                                HttpServletRequest request,
                                Model model) {
-        Node node = this.nodeService.findNodeById(id).get();
+        Node node = this.nodeService.findNodeById(id);
         node.setStars(node.getStars()+Double.parseDouble(userRating));
         node.setNumStars(node.getNumStars()+1);
         nodeService.deleteNodeById(id);
