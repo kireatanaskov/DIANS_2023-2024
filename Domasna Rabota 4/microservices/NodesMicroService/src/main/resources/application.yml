@@ -1,0 +1,15 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+  port: 9001
+
+spring:
+  application:
+    name: NODE-SERVICE
+
+logging:
+  level:
+    org.springframework.cloud.netflix.eureka: DEBUG
