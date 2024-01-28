@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: api-gateway
+  gateway:
+    httpclient:
+      wiretap: true
+    httpserver:
+      wiretap: true
+
+  cloud:
+    gateway:
+      routes:
+        - id: node-microservice
+          uri: lb://node-microservice
+          predicates:
+            - Path=/nodes-rest/**
+          filters:
+            - StripPrefix=1
+
+        - id: auth-microservice
+          uri: lb://auth-microservice
+          predicates:
+            - Path=/user/register/**
+          filters:
+            - StripPrefix=1
+
+        - id: culture-compass
+          uri: lb://culture-compass
+          predicates:
+            - Path=/**
+          filters:
+            - StripPrefix=1
+
+server:
+  port: 9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+        web: DEBUG
