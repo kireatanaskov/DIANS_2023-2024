@@ -44,6 +44,9 @@ public class Node implements Serializable {
     }
 
     public double getRating() {
+        if (numStars == 0){
+            return 0.0;
+        }
         return stars / numStars;
     }
 
