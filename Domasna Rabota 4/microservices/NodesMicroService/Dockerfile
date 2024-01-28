@@ -1,5 +1,5 @@
 FROM openjdk:17
 WORKDIR /NodesMicroService
-COPY target/*.jar /app.jar
+COPY target/NodesMicroService-0.0.1-SNAPSHOT.jar .
 EXPOSE 9001
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java","-jar","NodesMicroService-0.0.1-SNAPSHOT.jar"]
